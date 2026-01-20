@@ -55,6 +55,7 @@ jobs:
 
           # 3. Create CNAME for Custom Domain
           echo "apt.spacebarlabs.com" > CNAME
+          cp "../index.html" .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
