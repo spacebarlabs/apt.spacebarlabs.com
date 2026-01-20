@@ -10,20 +10,60 @@ jobs:
         with:
           fetch-depth: 2  # Essential! We need history to see the previous commit
 
-      - name: Verify Version Increment
+      - name: Verify Version Increments
+        shell: bash
         run: |
-          FILE="debian/control"
-          
-          # Extract versions
-          NEW_VER=$(grep "^Version:" $FILE | awk '{print $2}')
-          # Use 'origin/main' if checking a PR, or 'HEAD^' for direct pushes
-          OLD_VER=$(git show HEAD^:$FILE | grep "^Version:" | awk '{print $2}')
-          
-          echo "Comparing: $OLD_VER -> $NEW_VER"
-          
-          if dpkg --compare-versions "$NEW_VER" gt "$OLD_VER"; then
-            echo "Version is valid."
-          else
-            echo "::error file=$FILE::Version has not been incremented!"
+          # 1. Loop through all config files in packages/
+          FOUND_ERROR=0
+
+          for FILE_PATH in packages/*; do
+            # Skip if it's a directory or doesn't exist
+            [ -f "$FILE_PATH" ] || continue
+
+            echo "---------------------------------------------------"
+            echo "🔍 Checking $FILE_PATH..."
+
+            # 2. Get Current Version
+            NEW_VER=$(grep "^Version:" "$FILE_PATH" | head -n 1 | awk '{print $2}')
+
+            if [ -z "$NEW_VER" ]; then
+              echo "   ⚠️  Skipping: No 'Version:' field found."
+              continue
+            fi
+
+            # 3. Get Previous Version from Git History
+            #    We use || echo "" so the script doesn't crash on new files
+            OLD_VER=$(git show HEAD^:"$FILE_PATH" 2>/dev/null | grep "^Version:" | head -n 1 | awk '{print $2}')
+
+            if [ -z "$OLD_VER" ]; then
+               echo "   ✅ New file detected (no previous version). Passing."
+               continue
+            fi
+
+            echo "   Previous: $OLD_VER"
+            echo "   Current:  $NEW_VER"
+
+            # 4. Compare versions
+            if [ "$NEW_VER" == "$OLD_VER" ]; then
+               # Check if the file content actually changed.
+               # If the file changed but version didn't -> ERROR.
+               # If the file didn't change at all -> SKIP.
+               DIFF_COUNT=$(git diff HEAD^ HEAD --name-only | grep -c "$FILE_PATH")
+               if [ "$DIFF_COUNT" -eq "0" ]; then
+                 echo "   Use: File not modified in this commit. Skipping."
+                 continue
+               else
+                 echo "   ❌ ERROR: File modified but version not incremented!"
+                 FOUND_ERROR=1
+               fi
+            elif dpkg --compare-versions "$NEW_VER" gt "$OLD_VER"; then
+              echo "   ✅ Success: Version bumped."
+            else
+              echo "   ❌ ERROR: New version is not greater than old version."
+              FOUND_ERROR=1
+            fi
+          done
+
+          if [ "$FOUND_ERROR" -eq "1" ]; then
             exit 1
           fi
