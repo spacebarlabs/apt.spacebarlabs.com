@@ -1,0 +1,29 @@
+name: Lint Package
+on: [push, pull_request]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Essential! We need history to see the previous commit
+
+      - name: Verify Version Increment
+        run: |
+          FILE="debian/control"
+          
+          # Extract versions
+          NEW_VER=$(grep "^Version:" $FILE | awk '{print $2}')
+          # Use 'origin/main' if checking a PR, or 'HEAD^' for direct pushes
+          OLD_VER=$(git show HEAD^:$FILE | grep "^Version:" | awk '{print $2}')
+          
+          echo "Comparing: $OLD_VER -> $NEW_VER"
+          
+          if dpkg --compare-versions "$NEW_VER" gt "$OLD_VER"; then
+            echo "Version is valid."
+          else
+            echo "::error file=$FILE::Version has not been incremented!"
+            exit 1
+          fi
