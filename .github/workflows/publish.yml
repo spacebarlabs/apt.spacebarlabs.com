@@ -1,0 +1,65 @@
+name: Build and Publish APT Repo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/**'
+      - '.github/workflows/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push to gh-pages
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Install Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y equivs dpkg-dev
+
+      - name: Build Packages
+        run: |
+          mkdir -p dist
+          # Loop through all config files in packages/
+          for config in packages/*; do
+            if [ -f "$config" ]; then
+              echo "Building $config..."
+              equivs-build "$config"
+              mv *.deb dist/
+            fi
+          done
+
+      - name: Generate APT Index & Metadata
+        run: |
+          cd dist
+
+          # 1. Generate the Package Index
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+
+          # 2. Generate a Release file
+          # This gives your repo a nice name when users run 'apt update'
+          echo "Origin: Space Bar Labs" > Release
+          echo "Label: Infrastructure" >> Release
+          echo "Suite: stable" >> Release
+          echo "Codename: all" >> Release
+          echo "Architectures: all" >> Release
+          echo "Components: main" >> Release
+          echo "Description: Meta-packages for my setups" >> Release
+          echo "Date: $(date -Ru)" >> Release
+
+          # 3. Create CNAME for Custom Domain
+          echo "apt.spacebarlabs.com" > CNAME
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true # Keeps repo size small
