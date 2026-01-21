@@ -9,6 +9,10 @@ mkdir -p dist
 VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
 echo "Using version: $VERSION"
 
+# Set up trap to clean up temporary files
+temp_files=()
+trap 'rm -f "${temp_files[@]}"' EXIT
+
 # Loop through all config files in packages/
 for config in packages/*; do
   if [ -f "$config" ]; then
@@ -17,7 +21,7 @@ for config in packages/*; do
     # Create temporary config with injected version
     # Insert Version field after Package field for proper ordering
     temp_config=$(mktemp)
-    trap 'rm -f "$temp_config"' EXIT
+    temp_files+=("$temp_config")
     awk -v version="$VERSION" '
       /^Package:/ {
         print
@@ -30,7 +34,10 @@ for config in packages/*; do
     # Build package from temporary config
     equivs-build "$temp_config"
 
-    mv *.deb dist/
+    # Move .deb files to dist/ if they exist
+    if ls *.deb 1> /dev/null 2>&1; then
+      mv *.deb dist/
+    fi
   fi
 done
 
