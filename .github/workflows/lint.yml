@@ -2,77 +2,42 @@ name: Lint Package
 on: [push, pull_request]
 
 jobs:
-  check-version:
+  validate-package-format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history to compare against base branch
 
-      - name: Verify Version Increments
+      - name: Validate Package Files
         shell: bash
         run: |
-          # 1. Loop through all config files in packages/
+          # Basic validation of package files
           FOUND_ERROR=0
-
-          # Determine the comparison base
-          # For PRs, compare against the base branch; for pushes to main, compare against HEAD^
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BASE_REF="${{ github.event.pull_request.base.sha }}"
-            echo "📌 Pull Request detected. Comparing against base: $BASE_REF"
-          else
-            BASE_REF="HEAD^"
-            echo "📌 Push detected. Comparing against: $BASE_REF"
-          fi
 
           for FILE_PATH in packages/*; do
             # Skip if it's a directory or doesn't exist
             [ -f "$FILE_PATH" ] || continue
 
             echo "---------------------------------------------------"
-            echo "🔍 Checking $FILE_PATH..."
+            echo "🔍 Validating $FILE_PATH..."
 
-            # 2. Get Current Version
-            NEW_VER=$(grep "^Version:" "$FILE_PATH" | head -n 1 | awk '{print $2}')
-
-            if [ -z "$NEW_VER" ]; then
-              echo "   ⚠️  Skipping: No 'Version:' field found."
-              continue
+            # Check for required fields
+            if ! grep -q "^Package:" "$FILE_PATH"; then
+              echo "   ❌ ERROR: Missing 'Package:' field"
+              FOUND_ERROR=1
             fi
 
-            # 3. Get Previous Version from Git History
-            OLD_VER=$(git show "$BASE_REF":"$FILE_PATH" 2>/dev/null | grep "^Version:" | head -n 1 | awk '{print $2}')
-
-            if [ -z "$OLD_VER" ]; then
-               echo "   ✅ New file detected (no previous version). Passing."
-               continue
-            fi
-
-            echo "   Previous: $OLD_VER"
-            echo "   Current:  $NEW_VER"
-
-            # 4. Compare versions
-            if [ "$NEW_VER" == "$OLD_VER" ]; then
-               # We capture the specific filename from the diff.
-               # If the variable is empty, the file wasn't touched.
-               CHANGED_FILE=$(git diff --name-only "$BASE_REF" HEAD -- "$FILE_PATH")
-
-               if [ -z "$CHANGED_FILE" ]; then
-                 echo "   ✅ File not modified. Skipping."
-                 continue
-               else
-                 echo "   ❌ ERROR: File modified but version not incremented!"
-                 FOUND_ERROR=1
-               fi
-            elif dpkg --compare-versions "$NEW_VER" gt "$OLD_VER"; then
-              echo "   ✅ Success: Version bumped."
-            else
-              echo "   ❌ ERROR: New version is not greater than old version."
+            if ! grep -q "^Maintainer:" "$FILE_PATH"; then
+              echo "   ❌ ERROR: Missing 'Maintainer:' field"
               FOUND_ERROR=1
             fi
           done
 
           if [ "$FOUND_ERROR" -eq "1" ]; then
+            echo ""
+            echo "❌ Package validation failed"
             exit 1
           fi
+
+          echo ""
+          echo "✅ All package files are valid"

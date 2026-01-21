@@ -3,7 +3,6 @@ Priority: optional
 Standards-Version: 3.9.2
 
 Package: sbl-cli-utils
-Version: 1.3
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
   bash,
