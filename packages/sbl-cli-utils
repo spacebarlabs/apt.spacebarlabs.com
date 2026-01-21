@@ -7,12 +7,20 @@ Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
   bash,
   btop,
+  curl,
+  entr,
   git,
+  git-annex,
+  git-crypt,
+  gnupg2,
   gron,
+  jq,
+  less,
   lynx,
   man-db,
   micro,
   neovim,
+  openssh-client,
   rlwrap,
   ruby,
   tmux,
@@ -20,6 +28,8 @@ Depends:
   tree,
   unar,
   w3m,
+  wget,
+  wl-clipboard,
   zsh,
 Description: Space Bar Labs CLI Utilities
- Console-based system tools, editors, and web browsers.
+  Console-based system tools, editors, and web browsers.
