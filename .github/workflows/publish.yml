@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p dist
           # Generate version from git commit timestamp
-          VERSION=$(git show -s --format=%cd --date=format:%Y%m%d%H%M HEAD)
+          VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
           echo "Using version: $VERSION"
           
           # Loop through all config files in packages/
@@ -37,6 +37,7 @@ jobs:
               
               # Create temporary config with updated version
               temp_config=$(mktemp)
+              trap 'rm -f "$temp_config"' EXIT
               sed "s/^Version:.*/Version: $VERSION/" "$config" > "$temp_config"
               
               # Build package from temporary config

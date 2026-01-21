@@ -36,10 +36,6 @@ jobs:
               echo "   ❌ ERROR: Missing 'Maintainer:' field"
               FOUND_ERROR=1
             fi
-
-            if [ "$FOUND_ERROR" -eq "0" ]; then
-              echo "   ✅ Package file is valid"
-            fi
           done
 
           if [ "$FOUND_ERROR" -eq "1" ]; then
