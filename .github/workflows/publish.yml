@@ -24,58 +24,10 @@ jobs:
           sudo apt-get install -y equivs dpkg-dev
 
       - name: Build Packages
-        run: |
-          mkdir -p dist
-          # Generate version from git commit timestamp
-          VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
-          echo "Using version: $VERSION"
-
-          # Loop through all config files in packages/
-          for config in packages/*; do
-            if [ -f "$config" ]; then
-              echo "Building $config with version $VERSION..."
-
-              # Create temporary config with injected version
-              # Insert Version field after Package field for proper ordering
-              temp_config=$(mktemp)
-              trap 'rm -f "$temp_config"' EXIT
-              awk -v version="$VERSION" '
-                /^Package:/ {
-                  print
-                  print "Version: " version
-                  next
-                }
-                { print }
-              ' "$config" > "$temp_config"
-
-              # Build package from temporary config
-              equivs-build "$temp_config"
-
-              mv *.deb dist/
-            fi
-          done
+        run: ./scripts/build-packages.sh
 
       - name: Generate APT Index & Metadata
-        run: |
-          cd dist
-
-          # 1. Generate the Package Index
-          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
-
-          # 2. Generate a Release file
-          # This gives your repo a nice name when users run 'apt update'
-          echo "Origin: Space Bar Labs" > Release
-          echo "Label: Infrastructure" >> Release
-          echo "Suite: stable" >> Release
-          echo "Codename: all" >> Release
-          echo "Architectures: all" >> Release
-          echo "Components: main" >> Release
-          echo "Description: Meta-packages for my setups" >> Release
-          echo "Date: $(date -Ru)" >> Release
-
-          # 3. Create CNAME for Custom Domain
-          echo "apt.spacebarlabs.com" > CNAME
-          cp "../index.html" .
+        run: ./scripts/generate-apt-metadata.sh
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
