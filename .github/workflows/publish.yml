@@ -26,11 +26,23 @@ jobs:
       - name: Build Packages
         run: |
           mkdir -p dist
+          # Generate version from git commit timestamp
+          VERSION=$(git show -s --format=%cd --date=format:%Y%m%d%H%M HEAD)
+          echo "Using version: $VERSION"
+          
           # Loop through all config files in packages/
           for config in packages/*; do
             if [ -f "$config" ]; then
-              echo "Building $config..."
-              equivs-build "$config"
+              echo "Building $config with version $VERSION..."
+              
+              # Create temporary config with updated version
+              temp_config=$(mktemp)
+              sed "s/^Version:.*/Version: $VERSION/" "$config" > "$temp_config"
+              
+              # Build package from temporary config
+              equivs-build "$temp_config"
+              rm "$temp_config"
+              
               mv *.deb dist/
             fi
           done
