@@ -4,7 +4,9 @@ Section: misc
 Priority: optional
 Architecture: all
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
-Depends: sbl-cli-utils, sbl-gui-utils
+Depends:
+  sbl-cli-utils,
+  sbl-gui-utils,
 Description: Space Bar Labs Full
   This meta-package installs the complete set of Space Bar Labs
   packages.
