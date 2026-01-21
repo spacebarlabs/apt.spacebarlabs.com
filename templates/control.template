@@ -2,10 +2,10 @@ Section: misc
 Priority: optional
 Standards-Version: 3.9.2
 
-Package: sbl-flatpak-brief
+Package: {{PACKAGE_NAME}}
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends: flatpak
-Description: Brief - Install via Flatpak
-  This package installs Brief (io.github.shonebinu.Brief) via Flatpak.
+Description: {{APP_TITLE}} - Install via Flatpak
+  This package installs {{APP_TITLE}} ({{APP_ID}}) via Flatpak.
 Postinst: postinst
 Prerm: prerm

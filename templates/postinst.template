@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-APP_ID="org.gnome.Weather"
+APP_ID="{{APP_ID}}"
 
 # Ensure the exit code is 0 even if the remote exists
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
