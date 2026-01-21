@@ -7,6 +7,8 @@ on:
     paths:
       - 'packages/**'
       - '.github/workflows/**'
+      - 'flatpaks.txt'    # Added: Triggers build when you add/remove apps
+      - 'templates/**'    # Added: Triggers build when you edit control/postinst templates
 
 jobs:
   build-and-deploy:
@@ -26,8 +28,10 @@ jobs:
       - name: Build Packages
         run: |
           mkdir -p dist
-          # Generate version from git commit timestamp
-          VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
+          # Manual version control with Epoch
+          # We use "1:" to force apt to upgrade over the old timestamp versions (e.g. 2024...)
+          # Future updates should be 1:1.1, 1:1.2, etc.
+          VERSION="1:1.0"
           echo "Using version: $VERSION"
 
           # Build flatpak packages from flatpaks.txt
@@ -50,7 +54,6 @@ jobs:
               cd "$temp_dir"
               
               # Convert package name to title (e.g., "emergency-alerts" -> "Emergency Alerts")
-              # Using awk for portable title case conversion
               app_title=$(echo "$pkg_name" | awk '{ gsub(/-/, " "); for(i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
               
               # Generate control file from template
@@ -129,7 +132,6 @@ jobs:
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
           # 2. Generate a Release file
-          # This gives your repo a nice name when users run 'apt update'
           echo "Origin: Space Bar Labs" > Release
           echo "Label: Infrastructure" >> Release
           echo "Suite: stable" >> Release
@@ -149,4 +151,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          force_orphan: true # Keeps repo size small
+          force_orphan: true
