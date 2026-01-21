@@ -34,7 +34,7 @@ jobs:
           if [ -f "flatpaks.txt" ]; then
             echo "Building flatpak packages from flatpaks.txt..."
             
-            while IFS=': ' read -r pkg_name app_id || [ -n "$pkg_name" ]; do
+            while IFS=':' read -r pkg_name app_id || [ -n "$pkg_name" ]; do
               # Skip empty lines and comments
               [[ -z "$pkg_name" || "$pkg_name" =~ ^# ]] && continue
               
@@ -50,7 +50,8 @@ jobs:
               cd "$temp_dir"
               
               # Convert package name to title (e.g., "emergency-alerts" -> "Emergency Alerts")
-              app_title=$(echo "$pkg_name" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
+              # Using awk for portable title case conversion
+              app_title=$(echo "$pkg_name" | awk '{ gsub(/-/, " "); for(i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
               
               # Generate control file from template
               sed -e "s|{{PACKAGE_NAME}}|$package_name|g" \
@@ -70,6 +71,7 @@ jobs:
               
               # Add version to control file
               temp_config=$(mktemp)
+              trap 'rm -f "$temp_config"' EXIT
               awk -v version="$VERSION" '
                 /^Package:/ {
                   print
@@ -82,10 +84,13 @@ jobs:
               # Build package
               equivs-build "$temp_config"
               
+              # Clean up temp config
+              rm -f "$temp_config"
+              
               # Move to dist directory
               mv *.deb "$GITHUB_WORKSPACE/dist/"
               
-              # Clean up
+              # Clean up temp directory
               cd "$GITHUB_WORKSPACE"
               rm -rf "$temp_dir"
             done < flatpaks.txt
