@@ -5,6 +5,6 @@ Standards-Version: 3.9.2
 Package: sbl-cli-utils
 Version: 1.2
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
-Depends: btop, git, gron, lynx, man-db, micro, neovim, rlwrap, trash-cli, tree, unar, w3m
+Depends: sbl-intentional-failure, btop, git, gron, lynx, man-db, micro, neovim, rlwrap, trash-cli, tree, unar, w3m
 Description: Space Bar Labs CLI Utilities
  Console-based system tools, editors, and web browsers.
