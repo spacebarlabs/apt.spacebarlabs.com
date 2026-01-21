@@ -43,6 +43,6 @@ jobs:
             echo "❌ Package validation failed"
             exit 1
           fi
-          
+
           echo ""
           echo "✅ All package files are valid"
