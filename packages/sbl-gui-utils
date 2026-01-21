@@ -5,6 +5,7 @@ Standards-Version: 3.9.2
 Package: sbl-gui-utils
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
+  vlc,
   wl-clipboard,
 Description: Space Bar Labs GUI Utilities
   GUI-oriented tools
