@@ -29,7 +29,6 @@ Depends:
   unar,
   w3m,
   wget,
-  wl-clipboard,
   zsh,
 Description: Space Bar Labs CLI Utilities
   Console-based system tools, editors, and web browsers.

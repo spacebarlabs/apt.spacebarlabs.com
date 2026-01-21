@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-gui-utils
+Version: 1.0
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  wl-clipboard,
+Description: Space Bar Labs GUI Utilities
+  GUI-oriented tools
