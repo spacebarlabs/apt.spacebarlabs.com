@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+APP_ID="org.deskflow.deskflow"
+
+# Ensure the exit code is 0 even if the remote exists
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# Use --or-update to handle cases where the app is already present
+flatpak install -y --noninteractive --or-update flathub "$APP_ID"

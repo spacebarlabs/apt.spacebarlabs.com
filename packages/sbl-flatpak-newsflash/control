@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-newsflash
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Newsflash - Install via Flatpak
+  This package installs Newsflash (io.gitlab.news_flash.NewsFlash) via Flatpak.
+Postinst: postinst
+Prerm: prerm

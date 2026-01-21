@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-authenticator
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Authenticator - Install via Flatpak
+  This package installs Authenticator (com.belmoussaoui.Authenticator) via Flatpak.
+Postinst: postinst
+Prerm: prerm

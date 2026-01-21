@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-easy-effects
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Easy Effects - Install via Flatpak
+  This package installs Easy Effects (com.github.wwmm.easyeffects) via Flatpak.
+Postinst: postinst
+Prerm: prerm

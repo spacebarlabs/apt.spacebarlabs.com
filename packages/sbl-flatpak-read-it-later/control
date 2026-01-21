@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-read-it-later
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Read It Later - Install via Flatpak
+  This package installs Read It Later (com.belmoussaoui.ReadItLater) via Flatpak.
+Postinst: postinst
+Prerm: prerm

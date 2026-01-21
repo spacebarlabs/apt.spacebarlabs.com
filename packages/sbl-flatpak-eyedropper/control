@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-eyedropper
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Eyedropper - Install via Flatpak
+  This package installs Eyedropper (com.github.finefindus.eyedropper) via Flatpak.
+Postinst: postinst
+Prerm: prerm

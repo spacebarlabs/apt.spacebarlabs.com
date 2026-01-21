@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-resources
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Resources - Install via Flatpak
+  This package installs Resources (net.nokyan.Resources) via Flatpak.
+Postinst: postinst
+Prerm: prerm

@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-eloquent
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Eloquent - Install via Flatpak
+  This package installs Eloquent (re.sonny.Eloquent) via Flatpak.
+Postinst: postinst
+Prerm: prerm

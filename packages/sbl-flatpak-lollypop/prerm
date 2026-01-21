@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+APP_ID="org.gnome.Lollypop"
+
+# Only uninstall if the app is actually there to avoid script errors
+if flatpak info "$APP_ID" >/dev/null 2>&1; then
+    flatpak uninstall -y --noninteractive "$APP_ID"
+fi

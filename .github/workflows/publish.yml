@@ -30,13 +30,16 @@ jobs:
           VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
           echo "Using version: $VERSION"
 
-          # Loop through all config files in packages/
-          for config in packages/*; do
-            if [ -f "$config" ]; then
-              echo "Building $config with version $VERSION..."
-
+          # Loop through all items in packages/
+          for item in packages/*; do
+            if [ -d "$item" ]; then
+              # Directory-based package (with postinst/prerm scripts)
+              echo "Building directory-based package $item with version $VERSION..."
+              
+              # Navigate to the package directory
+              cd "$item"
+              
               # Create temporary config with injected version
-              # Insert Version field after Package field for proper ordering
               temp_config=$(mktemp)
               trap 'rm -f "$temp_config"' EXIT
               awk -v version="$VERSION" '
@@ -46,7 +49,32 @@ jobs:
                   next
                 }
                 { print }
-              ' "$config" > "$temp_config"
+              ' control > "$temp_config"
+              
+              # Build package from temporary config
+              equivs-build "$temp_config"
+              
+              # Move built package to dist
+              mv *.deb ../../dist/
+              
+              # Return to repo root
+              cd ../..
+              
+            elif [ -f "$item" ]; then
+              # File-based package (simple meta-package)
+              echo "Building file-based package $item with version $VERSION..."
+
+              # Create temporary config with injected version
+              temp_config=$(mktemp)
+              trap 'rm -f "$temp_config"' EXIT
+              awk -v version="$VERSION" '
+                /^Package:/ {
+                  print
+                  print "Version: " version
+                  next
+                }
+                { print }
+              ' "$item" > "$temp_config"
 
               # Build package from temporary config
               equivs-build "$temp_config"

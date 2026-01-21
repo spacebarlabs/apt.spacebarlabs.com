@@ -1,0 +1,11 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-flatpak-weather
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: flatpak
+Description: Weather - Install via Flatpak
+  This package installs Weather (org.gnome.Weather) via Flatpak.
+Postinst: postinst
+Prerm: prerm
