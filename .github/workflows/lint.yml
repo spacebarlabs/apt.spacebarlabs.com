@@ -27,11 +27,6 @@ jobs:
               FOUND_ERROR=1
             fi
 
-            if ! grep -q "^Version:" "$FILE_PATH"; then
-              echo "   ❌ ERROR: Missing 'Version:' field"
-              FOUND_ERROR=1
-            fi
-
             if ! grep -q "^Maintainer:" "$FILE_PATH"; then
               echo "   ❌ ERROR: Missing 'Maintainer:' field"
               FOUND_ERROR=1

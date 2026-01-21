@@ -35,10 +35,11 @@ jobs:
             if [ -f "$config" ]; then
               echo "Building $config with version $VERSION..."
 
-              # Create temporary config with updated version
+              # Create temporary config with injected version
               temp_config=$(mktemp)
               trap 'rm -f "$temp_config"' EXIT
-              sed "s/^Version:.*/Version: $VERSION/" "$config" > "$temp_config"
+              cp "$config" "$temp_config"
+              echo "Version: $VERSION" >> "$temp_config"
 
               # Build package from temporary config
               equivs-build "$temp_config"
