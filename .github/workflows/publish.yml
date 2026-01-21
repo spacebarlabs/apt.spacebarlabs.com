@@ -30,13 +30,46 @@ jobs:
           VERSION=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M' HEAD)
           echo "Using version: $VERSION"
 
-          # Loop through all config files in packages/
-          for config in packages/*; do
-            if [ -f "$config" ]; then
-              echo "Building $config with version $VERSION..."
-
-              # Create temporary config with injected version
-              # Insert Version field after Package field for proper ordering
+          # Build flatpak packages from flatpaks.txt
+          if [ -f "flatpaks.txt" ]; then
+            echo "Building flatpak packages from flatpaks.txt..."
+            
+            while IFS=':' read -r pkg_name app_id || [ -n "$pkg_name" ]; do
+              # Skip empty lines and comments
+              [[ -z "$pkg_name" || "$pkg_name" =~ ^# ]] && continue
+              
+              # Trim whitespace
+              pkg_name=$(echo "$pkg_name" | xargs)
+              app_id=$(echo "$app_id" | xargs)
+              
+              package_name="sbl-flatpak-$pkg_name"
+              echo "Building $package_name ($app_id)..."
+              
+              # Create temporary directory for package
+              temp_dir=$(mktemp -d)
+              cd "$temp_dir"
+              
+              # Convert package name to title (e.g., "emergency-alerts" -> "Emergency Alerts")
+              # Using awk for portable title case conversion
+              app_title=$(echo "$pkg_name" | awk '{ gsub(/-/, " "); for(i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
+              
+              # Generate control file from template
+              sed -e "s|{{PACKAGE_NAME}}|$package_name|g" \
+                  -e "s|{{APP_ID}}|$app_id|g" \
+                  -e "s|{{APP_TITLE}}|$app_title|g" \
+                  "$GITHUB_WORKSPACE/templates/control.template" > control
+              
+              # Generate postinst script from template
+              sed "s|{{APP_ID}}|$app_id|g" \
+                  "$GITHUB_WORKSPACE/templates/postinst.template" > postinst
+              chmod +x postinst
+              
+              # Generate prerm script from template
+              sed "s|{{APP_ID}}|$app_id|g" \
+                  "$GITHUB_WORKSPACE/templates/prerm.template" > prerm
+              chmod +x prerm
+              
+              # Add version to control file
               temp_config=$(mktemp)
               trap 'rm -f "$temp_config"' EXIT
               awk -v version="$VERSION" '
@@ -46,7 +79,40 @@ jobs:
                   next
                 }
                 { print }
-              ' "$config" > "$temp_config"
+              ' control > "$temp_config"
+              
+              # Build package
+              equivs-build "$temp_config"
+              
+              # Clean up temp config
+              rm -f "$temp_config"
+              
+              # Move to dist directory
+              mv *.deb "$GITHUB_WORKSPACE/dist/"
+              
+              # Clean up temp directory
+              cd "$GITHUB_WORKSPACE"
+              rm -rf "$temp_dir"
+            done < flatpaks.txt
+          fi
+
+          # Build regular file-based packages from packages/
+          for item in packages/*; do
+            if [ -f "$item" ]; then
+              # File-based package (simple meta-package)
+              echo "Building file-based package $item with version $VERSION..."
+
+              # Create temporary config with injected version
+              temp_config=$(mktemp)
+              trap 'rm -f "$temp_config"' EXIT
+              awk -v version="$VERSION" '
+                /^Package:/ {
+                  print
+                  print "Version: " version
+                  next
+                }
+                { print }
+              ' "$item" > "$temp_config"
 
               # Build package from temporary config
               equivs-build "$temp_config"

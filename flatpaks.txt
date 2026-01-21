@@ -1,0 +1,21 @@
+# Flatpak Application Mappings
+# Format: package-name: application-id
+# This file is used to generate flatpak packages for apt installation
+# Usage: apt install sbl-flatpak-{package-name}
+
+authenticator: com.belmoussaoui.Authenticator
+brief: io.github.shonebinu.Brief
+deskflow: org.deskflow.deskflow
+easy-effects: com.github.wwmm.easyeffects
+eloquent: re.sonny.Eloquent
+emergency-alerts: io.github.leolost2605.emergency-alerts
+eyedropper: com.github.finefindus.eyedropper
+foliate: com.github.johnfactotum.Foliate
+logseq: com.logseq.Logseq
+lollypop: org.gnome.Lollypop
+maps: org.gnome.Maps
+newsflash: io.gitlab.news_flash.NewsFlash
+read-it-later: com.belmoussaoui.ReadItLater
+resources: net.nokyan.Resources
+weather: org.gnome.Weather
+web: org.gnome.Epiphany
