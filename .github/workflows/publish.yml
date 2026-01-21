@@ -36,14 +36,20 @@ jobs:
               echo "Building $config with version $VERSION..."
 
               # Create temporary config with injected version
+              # Insert Version field after Package field for proper ordering
               temp_config=$(mktemp)
               trap 'rm -f "$temp_config"' EXIT
-              cp "$config" "$temp_config"
-              echo "Version: $VERSION" >> "$temp_config"
+              awk -v version="$VERSION" '
+                /^Package:/ {
+                  print
+                  print "Version: " version
+                  next
+                }
+                { print }
+              ' "$config" > "$temp_config"
 
               # Build package from temporary config
               equivs-build "$temp_config"
-              rm "$temp_config"
 
               mv *.deb dist/
             fi
