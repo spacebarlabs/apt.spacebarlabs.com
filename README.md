@@ -12,5 +12,5 @@ sudo apt update
 Then pick a package to install, such as:
 
 ```bash
-sudo apt install sbl-cli-utils
+sudo apt install sbl-full
 ```
