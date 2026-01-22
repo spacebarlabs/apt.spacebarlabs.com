@@ -6,9 +6,11 @@ set -e
 echo "Note: APT repository configurations will remain in place."
 echo "If you want to remove them manually:"
 echo "  sudo rm -f /etc/apt/sources.list.d/mise.list"
+echo "  sudo rm -f /etc/apt/sources.list.d/google-chrome.list"
 echo "  sudo rm -f /etc/apt/sources.list.d/spacebarlabs.list"
 echo "  sudo rm -f /etc/apt/sources.list.d/docker.sources"
 echo "  sudo rm -f /etc/apt/keyrings/mise-archive-keyring.asc"
 echo "  sudo rm -f /etc/apt/keyrings/docker.asc"
+echo "  sudo rm -f /etc/apt/keyrings/google-chrome-archive-keyring.gpg"
 
 exit 0
