@@ -1,0 +1,15 @@
+Package: sbl-docker
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  sbl-apt-repos,
+  docker-ce,
+  docker-ce-cli,
+  containerd.io,
+  docker-buildx-plugin,
+  docker-compose-plugin,
+Description: Space Bar Labs Docker
+  This meta-package installs Docker Engine and related tools including
+  the Docker CLI, containerd, Docker Buildx, and Docker Compose plugins.
