@@ -48,6 +48,12 @@ for FILE_PATH in packages/*; do
       continue
     fi
     
+    # Skip internal sbl-* packages (they're defined in this repo)
+    if [[ "$PACKAGE_NAME" == sbl-* ]]; then
+      echo "   Skipping '$PACKAGE_NAME' (internal package)"
+      continue
+    fi
+    
     echo -n "   Checking '$PACKAGE_NAME'... "
     
     # Use apt-cache policy to check if package exists

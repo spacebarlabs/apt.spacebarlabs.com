@@ -1,0 +1,10 @@
+Package: sbl-npm-codebuff
+Version: 1:1.0
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: sbl-apt-repos, npm
+Description: codebuff - Install via npm
+  This package installs codebuff via npm.
+  codebuff is automatically installed and updated via npm on package installation.
