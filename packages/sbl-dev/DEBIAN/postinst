@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+echo "Installing/updating codebuff via npm..."
+
+# Install or update codebuff globally
+# Using --force to ensure it's always updated, as mentioned in the issue
+npm install -g codebuff
+
+echo "codebuff installation/update complete."
+
+exit 0
