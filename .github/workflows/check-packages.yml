@@ -26,18 +26,30 @@ jobs:
           echo "Checking package availability in Ubuntu"
           echo "=========================================="
           
-          # Loop through all package files
-          for FILE_PATH in packages/*; do
-            # Skip if it's a directory or doesn't exist
-            [ -f "$FILE_PATH" ] || continue
+          # Loop through all package files and directories
+          for ITEM in packages/*; do
+            # Determine the control file path
+            if [ -f "$ITEM" ]; then
+              # File-based package
+              CONTROL_FILE="$ITEM"
+              PACKAGE_NAME=$(basename "$ITEM")
+            elif [ -d "$ITEM" ]; then
+              # Directory-based package
+              CONTROL_FILE="$ITEM/control"
+              PACKAGE_NAME=$(basename "$ITEM")
+              [ -f "$CONTROL_FILE" ] || continue
+            else
+              continue
+            fi
             
             echo ""
             echo "---------------------------------------------------"
-            echo "🔍 Checking $(basename "$FILE_PATH")..."
+            echo "🔍 Checking $PACKAGE_NAME..."
             echo "---------------------------------------------------"
             
-            # Extract the Depends field
-            DEPENDS_LINE=$(grep "^Depends:" "$FILE_PATH" | head -n 1)
+            # Extract the Depends field (handles multi-line dependencies)
+            # This captures "Depends:" line and all indented continuation lines
+            DEPENDS_LINE=$(awk '/^Depends:/ { deps=$0; getline; while ($0 ~ /^[[:space:]]/) { deps=deps" "$0; getline } print deps }' "$CONTROL_FILE")
             
             if [ -z "$DEPENDS_LINE" ]; then
               echo "   ⚠️  No 'Depends:' field found. Skipping."
@@ -58,6 +70,12 @@ jobs:
               
               # Skip if package name is empty
               [ -z "$PACKAGE_NAME" ] && continue
+              
+              # Skip our own sbl-* packages
+              if [[ "$PACKAGE_NAME" =~ ^sbl- ]]; then
+                echo "   Skipping '$PACKAGE_NAME' (internal package)"
+                continue
+              fi
               
               echo -n "   Checking '$PACKAGE_NAME'... "
               
