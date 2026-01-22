@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+# Configure mise repository
+echo "Configuring mise repository..."
+
+# Create keyrings directory if it doesn't exist
+install -dm 755 /etc/apt/keyrings
+
+# Download and install mise GPG key
+if [ ! -f /etc/apt/keyrings/mise-archive-keyring.asc ]; then
+    curl -fsSL https://mise.jdx.dev/gpg-key.pub -o /etc/apt/keyrings/mise-archive-keyring.asc
+    chmod 644 /etc/apt/keyrings/mise-archive-keyring.asc
+    echo "mise GPG key installed."
+else
+    echo "mise GPG key already exists."
+fi
+
+# Add mise repository to sources
+MISE_SOURCE="deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.jdx.dev/deb stable main"
+MISE_SOURCE_FILE="/etc/apt/sources.list.d/mise.list"
+
+if [ ! -f "$MISE_SOURCE_FILE" ] || ! grep -qF "$MISE_SOURCE" "$MISE_SOURCE_FILE"; then
+    echo "$MISE_SOURCE" > "$MISE_SOURCE_FILE"
+    chmod 644 "$MISE_SOURCE_FILE"
+    echo "mise repository added to sources."
+else
+    echo "mise repository already configured."
+fi
+
+# Configure Space Bar Labs repository
+echo "Configuring Space Bar Labs repository..."
+
+SBL_SOURCE="deb [trusted=yes] https://apt.spacebarlabs.com/ ./"
+SBL_SOURCE_FILE="/etc/apt/sources.list.d/spacebarlabs.list"
+
+if [ ! -f "$SBL_SOURCE_FILE" ] || ! grep -qF "$SBL_SOURCE" "$SBL_SOURCE_FILE"; then
+    echo "$SBL_SOURCE" > "$SBL_SOURCE_FILE"
+    chmod 644 "$SBL_SOURCE_FILE"
+    echo "Space Bar Labs repository added to sources."
+else
+    echo "Space Bar Labs repository already configured."
+fi
+
+echo "Repository configuration complete. Please run 'sudo apt update' to refresh package lists."
+
+exit 0

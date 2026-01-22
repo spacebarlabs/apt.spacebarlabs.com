@@ -59,6 +59,12 @@ jobs:
               # Skip if package name is empty
               [ -z "$PACKAGE_NAME" ] && continue
               
+              # Skip packages that are from external repositories
+              if [ "$PACKAGE_NAME" = "mise" ] || [ "$PACKAGE_NAME" = "sbl-apt-repos" ]; then
+                echo "   Skipping '$PACKAGE_NAME' (external repository)"
+                continue
+              fi
+              
               echo -n "   Checking '$PACKAGE_NAME'... "
               
               # Use apt-cache policy to check if package exists

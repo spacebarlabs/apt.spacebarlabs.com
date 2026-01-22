@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+# This script runs before the package is removed
+
+echo "Note: APT repository configurations will remain in place."
+echo "If you want to remove them manually:"
+echo "  sudo rm -f /etc/apt/sources.list.d/mise.list"
+echo "  sudo rm -f /etc/apt/sources.list.d/spacebarlabs.list"
+echo "  sudo rm -f /etc/apt/keyrings/mise-archive-keyring.asc"
+
+exit 0
