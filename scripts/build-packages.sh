@@ -92,6 +92,12 @@ for item in packages/*; do
     
     # Build package with dpkg-deb
     dpkg-deb --build "$item" "dist/${package_name}_${VERSION//:/}_all.deb"
+    
+    # Create a generic alias for the bootstrap package
+    if [ "$package_name" = "sbl-apt-repos" ]; then
+      cp "dist/${package_name}_${VERSION//:/}_all.deb" "dist/${package_name}.deb"
+      echo "   Created alias: dist/${package_name}.deb"
+    fi
   elif [ -f "$item" ]; then
     # File-based package (simple meta-package)
     echo "Building file-based package $item with version $VERSION..."
