@@ -8,8 +8,9 @@ echo "Installing/updating codebuff via npm..."
 npm install -g codebuff
 
 # Run codebuff --version to trigger download of extra files at install time
+# Use || true to prevent installation failure if initialization has issues
 echo "Initializing codebuff..."
-codebuff --version
+codebuff --version || true
 
 echo "codebuff installation/update complete."
 
