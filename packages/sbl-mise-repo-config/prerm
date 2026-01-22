@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+# Remove mise repository configuration
+if [ -f /etc/apt/sources.list.d/mise.sources ]; then
+    echo "Removing mise repository configuration..."
+    rm -f /etc/apt/sources.list.d/mise.sources
+fi
+
+# Remove mise GPG key
+if [ -f /usr/share/keyrings/mise-archive-keyring.gpg ]; then
+    echo "Removing mise GPG key..."
+    rm -f /usr/share/keyrings/mise-archive-keyring.gpg
+fi
+
+echo "mise repository configuration removed."

@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+echo ""
+echo "======================================================================"
+echo "  mise repository has been configured!"
+echo "======================================================================"
+echo ""
+echo "To install mise, please run:"
+echo ""
+echo "  sudo apt update"
+echo "  sudo apt install -y mise"
+echo ""
+echo "======================================================================"
+echo ""

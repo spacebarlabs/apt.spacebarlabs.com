@@ -23,6 +23,7 @@ Depends:
   openssh-client,
   rlwrap,
   ruby,
+  sbl-mise-repo-config,
   tmux,
   trash-cli,
   tree,
@@ -32,3 +33,6 @@ Depends:
   zsh,
 Description: Space Bar Labs CLI Utilities
   Console-based system tools, editors, and web browsers.
+  This package also configures the mise repository. After installation,
+  run 'sudo apt update' again, then install mise with 'sudo apt install mise'.
+Postinst: postinst

@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+# Download and install mise GPG key
+echo "Installing mise repository GPG key..."
+mkdir -p /usr/share/keyrings
+curl -fSsL https://mise.jdx.dev/gpg-key.pub | gpg --dearmor -o /usr/share/keyrings/mise-archive-keyring.gpg
+
+# Create the repository configuration in deb822 format
+echo "Creating mise repository configuration..."
+cat > /etc/apt/sources.list.d/mise.sources <<EOF
+Types: deb
+URIs: https://mise.jdx.dev/deb
+Suites: stable
+Components: main
+Signed-By: /usr/share/keyrings/mise-archive-keyring.gpg
+EOF
+
+echo "mise repository configured successfully."
+echo "Please run 'sudo apt update' to refresh package lists."

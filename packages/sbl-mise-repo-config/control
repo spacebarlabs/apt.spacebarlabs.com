@@ -1,0 +1,13 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-mise-repo-config
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: curl, gnupg
+Description: Repository configuration for mise
+  This package configures the mise (https://mise.jdx.dev) APT repository.
+  After installing this package, run 'sudo apt update' again to refresh
+  the package list, then you can install mise with 'sudo apt install mise'.
+Postinst: postinst
+Prerm: prerm

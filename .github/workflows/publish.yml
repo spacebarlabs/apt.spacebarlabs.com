@@ -121,6 +121,49 @@ jobs:
               equivs-build "$temp_config"
 
               mv *.deb dist/
+            elif [ -d "$item" ]; then
+              # Directory-based package (with postinst/prerm scripts)
+              echo "Building directory-based package $item with version $VERSION..."
+              
+              # Create temporary directory for building
+              temp_dir=$(mktemp -d)
+              cd "$temp_dir"
+              
+              # Copy package files
+              cp "$GITHUB_WORKSPACE/$item/control" .
+              if [ -f "$GITHUB_WORKSPACE/$item/postinst" ]; then
+                cp "$GITHUB_WORKSPACE/$item/postinst" .
+                chmod +x postinst
+              fi
+              if [ -f "$GITHUB_WORKSPACE/$item/prerm" ]; then
+                cp "$GITHUB_WORKSPACE/$item/prerm" .
+                chmod +x prerm
+              fi
+              
+              # Add version to control file
+              temp_config=$(mktemp)
+              trap 'rm -f "$temp_config"' EXIT
+              awk -v version="$VERSION" '
+                /^Package:/ {
+                  print
+                  print "Version: " version
+                  next
+                }
+                { print }
+              ' control > "$temp_config"
+              
+              # Build package
+              equivs-build "$temp_config"
+              
+              # Clean up temp config
+              rm -f "$temp_config"
+              
+              # Move to dist directory
+              mv *.deb "$GITHUB_WORKSPACE/dist/"
+              
+              # Clean up temp directory
+              cd "$GITHUB_WORKSPACE"
+              rm -rf "$temp_dir"
             fi
           done
 
