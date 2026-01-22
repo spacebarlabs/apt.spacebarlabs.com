@@ -4,7 +4,7 @@ set -e
 echo "Uninstalling codebuff..."
 
 # Check if codebuff is installed before trying to uninstall
-if npm list -g codebuff >/dev/null 2>&1; then
+if npm list -g --depth=0 codebuff >/dev/null 2>&1; then
     npm uninstall -g codebuff
     echo "codebuff uninstalled."
 else
