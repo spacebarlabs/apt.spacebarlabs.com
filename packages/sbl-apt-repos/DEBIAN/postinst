@@ -86,6 +86,7 @@ DOCKER_SOURCE_FILE="/etc/apt/sources.list.d/docker.sources"
 if [ ! -f "$DOCKER_SOURCE_FILE" ]; then
     # Detect Ubuntu codename
     if [ -f /etc/os-release ]; then
+        # shellcheck disable=SC1091
         . /etc/os-release
         CODENAME="${UBUNTU_CODENAME:-$VERSION_CODENAME}"
     else
