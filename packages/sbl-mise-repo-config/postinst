@@ -3,7 +3,7 @@ set -e
 
 # Download and install mise GPG key
 echo "Installing mise repository GPG key..."
-mkdir -p /usr/share/keyrings
+mkdir -p -m 755 /usr/share/keyrings
 curl -fSsL https://mise.jdx.dev/gpg-key.pub | gpg --dearmor -o /usr/share/keyrings/mise-archive-keyring.gpg
 
 # Create the repository configuration in deb822 format

@@ -142,7 +142,6 @@ jobs:
               
               # Add version to control file
               temp_config=$(mktemp)
-              trap 'rm -f "$temp_config"' EXIT
               awk -v version="$VERSION" '
                 /^Package:/ {
                   print
