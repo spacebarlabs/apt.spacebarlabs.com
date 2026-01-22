@@ -5,6 +5,7 @@ Standards-Version: 3.9.2
 Package: sbl-cli-utils
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
+  sbl-apt-repos,
   bash,
   btop,
   curl,
@@ -19,6 +20,7 @@ Depends:
   lynx,
   man-db,
   micro,
+  mise,
   neovim,
   openssh-client,
   rlwrap,

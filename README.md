@@ -4,13 +4,41 @@ Debian packages.  Meta packages to make it easy to install preferred tools on De
 
 ## Usage
 
+### Initial Setup (Bootstrap)
+
+To use packages from apt.spacebarlabs.com, first install the repository configuration package:
+
 ```bash
-echo "deb [trusted=yes] https://apt.spacebarlabs.com/ ./" | sudo tee /etc/apt/sources.list.d/spacebarlabs.list
+# Download and install the repository configuration package
+wget -qO /tmp/sbl-apt-repos.deb https://apt.spacebarlabs.com/sbl-apt-repos.deb
+sudo apt install -y /tmp/sbl-apt-repos.deb
+rm /tmp/sbl-apt-repos.deb
+
+# Update package lists to see newly available packages
 sudo apt update
 ```
 
-Then pick a package to install, such as:
+This bootstrap package (`sbl-apt-repos`) configures APT repositories for:
+- **mise**: A polyglot runtime manager (replaces asdf, nvm, pyenv, etc.)
+- **apt.spacebarlabs.com**: All Space Bar Labs packages
+
+### Installing Packages
+
+After the initial setup, you can install any Space Bar Labs package:
 
 ```bash
-sudo apt install sbl-full
+# Install CLI utilities (includes mise and other tools)
+sudo apt install -y sbl-cli-utils
+
+# Or install the full suite
+sudo apt install -y sbl-full
+```
+
+### Upgrading
+
+To upgrade all installed packages:
+
+```bash
+sudo apt update
+sudo apt upgrade
 ```

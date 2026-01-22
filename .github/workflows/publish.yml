@@ -101,7 +101,19 @@ jobs:
 
           # Build regular file-based packages from packages/
           for item in packages/*; do
-            if [ -f "$item" ]; then
+            if [ -d "$item" ]; then
+              # Directory-based package (with DEBIAN/ control directory)
+              package_name=$(basename "$item")
+              echo "Building directory-based package $package_name with version $VERSION..."
+              
+              # Update version in control file
+              if [ -f "$item/DEBIAN/control" ]; then
+                sed -i "s/^Version:.*/Version: $VERSION/" "$item/DEBIAN/control"
+              fi
+              
+              # Build package with dpkg-deb
+              dpkg-deb --build "$item" "dist/${package_name}_${VERSION//:/}_all.deb"
+            elif [ -f "$item" ]; then
               # File-based package (simple meta-package)
               echo "Building file-based package $item with version $VERSION..."
 
