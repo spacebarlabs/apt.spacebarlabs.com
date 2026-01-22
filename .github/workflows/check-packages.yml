@@ -59,9 +59,15 @@ jobs:
               # Skip if package name is empty
               [ -z "$PACKAGE_NAME" ] && continue
               
-              # Skip packages that are from external repositories
+              # Skip packages that are from external repositories or internal sbl packages
               if [ "$PACKAGE_NAME" = "mise" ] || [ "$PACKAGE_NAME" = "sbl-apt-repos" ]; then
                 echo "   Skipping '$PACKAGE_NAME' (external repository)"
+                continue
+              fi
+              
+              # Skip internal sbl-* packages (they're defined in this repo)
+              if [[ "$PACKAGE_NAME" == sbl-* ]]; then
+                echo "   Skipping '$PACKAGE_NAME' (internal package)"
                 continue
               fi
               

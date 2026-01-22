@@ -4,7 +4,6 @@ Section: misc
 Priority: optional
 Architecture: all
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
-Depends: sbl-apt-repos, npm
+Depends: sbl-apt-repos, sbl-npm-codebuff
 Description: Space Bar Labs Development Tools
   Development tools including codebuff and other npm-based utilities.
-  This package automatically installs and updates codebuff via npm.
