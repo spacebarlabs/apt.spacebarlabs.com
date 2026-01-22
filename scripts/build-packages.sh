@@ -71,7 +71,7 @@ if [ -f "flatpaks.txt" ]; then
     rm -f "$temp_config"
     
     # Move to dist directory
-    mv ./*.deb "$WORKSPACE/dist/"
+    find . -maxdepth 1 -name '*.deb' -exec mv {} "$WORKSPACE/dist/" \;
     
     # Clean up temp directory
     cd "$WORKSPACE"
@@ -115,7 +115,7 @@ for item in packages/*; do
     # Build package from temporary config
     equivs-build "$temp_config"
 
-    mv ./*.deb dist/
+    find . -maxdepth 1 -name '*.deb' -exec mv {} dist/ \;
   fi
 done
 
