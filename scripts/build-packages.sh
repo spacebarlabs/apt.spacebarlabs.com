@@ -3,6 +3,9 @@
 
 set -e
 
+# Store the workspace directory
+WORKSPACE="${GITHUB_WORKSPACE:-$(pwd)}"
+
 mkdir -p dist
 
 # Manual version control with Epoch
@@ -33,9 +36,6 @@ if [ -f "flatpaks.txt" ]; then
     # Convert package name to title (e.g., "emergency-alerts" -> "Emergency Alerts")
     app_title=$(echo "$pkg_name" | awk '{ gsub(/-/, " "); for(i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
     
-    # Store the workspace directory
-    WORKSPACE="${GITHUB_WORKSPACE:-$(pwd)}"
-    
     # Generate control file from template
     sed -e "s|{{PACKAGE_NAME}}|$package_name|g" \
         -e "s|{{APP_ID}}|$app_id|g" \
@@ -54,7 +54,6 @@ if [ -f "flatpaks.txt" ]; then
     
     # Add version to control file
     temp_config=$(mktemp)
-    trap 'rm -f "$temp_config"' EXIT
     awk -v version="$VERSION" '
       /^Package:/ {
         print
@@ -67,7 +66,7 @@ if [ -f "flatpaks.txt" ]; then
     # Build package
     equivs-build "$temp_config"
     
-    # Clean up temp config
+    # Clean up temp config immediately
     rm -f "$temp_config"
     
     # Move to dist directory
@@ -78,9 +77,6 @@ if [ -f "flatpaks.txt" ]; then
     rm -rf "$temp_dir"
   done < flatpaks.txt
 fi
-
-# Store the workspace directory for later use
-WORKSPACE="${GITHUB_WORKSPACE:-$(pwd)}"
 
 # Build regular file-based packages from packages/
 for item in packages/*; do
@@ -102,7 +98,6 @@ for item in packages/*; do
 
     # Create temporary config with injected version
     temp_config=$(mktemp)
-    trap 'rm -f "$temp_config"' EXIT
     awk -v version="$VERSION" '
       /^Package:/ {
         print
@@ -114,6 +109,9 @@ for item in packages/*; do
 
     # Build package from temporary config
     equivs-build "$temp_config"
+    
+    # Clean up temp config immediately
+    rm -f "$temp_config"
 
     find . -maxdepth 1 -name '*.deb' -exec mv {} dist/ \;
   fi
