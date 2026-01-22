@@ -28,6 +28,30 @@ else
     echo "mise repository already configured."
 fi
 
+# Configure Google Chrome repository
+echo "Configuring Google Chrome repository..."
+
+# Download and install Google Chrome GPG key
+if [ ! -f /etc/apt/keyrings/google-chrome-archive-keyring.gpg ]; then
+    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome-archive-keyring.gpg
+    chmod 644 /etc/apt/keyrings/google-chrome-archive-keyring.gpg
+    echo "Google Chrome GPG key installed."
+else
+    echo "Google Chrome GPG key already exists."
+fi
+
+# Add Google Chrome repository to sources
+CHROME_SOURCE="deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome-archive-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main"
+CHROME_SOURCE_FILE="/etc/apt/sources.list.d/google-chrome.list"
+
+if [ ! -f "$CHROME_SOURCE_FILE" ] || ! grep -qF "$CHROME_SOURCE" "$CHROME_SOURCE_FILE"; then
+    echo "$CHROME_SOURCE" > "$CHROME_SOURCE_FILE"
+    chmod 644 "$CHROME_SOURCE_FILE"
+    echo "Google Chrome repository added to sources."
+else
+    echo "Google Chrome repository already configured."
+fi
+
 # Configure Space Bar Labs repository
 echo "Configuring Space Bar Labs repository..."
 
