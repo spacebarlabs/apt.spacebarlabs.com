@@ -9,6 +9,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
       - name: Run ShellCheck
         shell: bash
         run: |
@@ -18,7 +21,7 @@ jobs:
           
           # Find all shell scripts, including those without extensions
           # We use the 'file' command to detect shell scripts by their shebang or content
-          SHELL_SCRIPTS=$(find . -type f -not -path './.git/*' -exec file {} \; | grep -E 'shell script|/bin/(ba)?sh' | cut -d: -f1)
+          SHELL_SCRIPTS=$(find . -type f -not -path './.git/*' -exec file {} \; | grep -E '^[^:]*: .*(shell script|/bin/(ba)?sh)' | cut -d: -f1)
           
           if [ -z "$SHELL_SCRIPTS" ]; then
             echo "No shell scripts found"
@@ -43,7 +46,7 @@ jobs:
           
           echo ""
           echo "=========================================="
-          if [ "$FOUND_ERROR" -eq "1" ]; then
+          if [ "$FOUND_ERROR" -eq 1 ]; then
             echo "❌ FAILURE: Some shell scripts have syntax errors"
             echo "=========================================="
             exit 1
