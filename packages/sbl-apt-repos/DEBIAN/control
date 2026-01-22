@@ -1,5 +1,5 @@
 Package: sbl-apt-repos
-Version: 1:1.0
+Version: 1:1.1
 Section: misc
 Priority: optional
 Architecture: all
@@ -7,5 +7,5 @@ Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends: curl, gnupg
 Description: Space Bar Labs APT Repository Configurations
   This package configures APT repositories for packages referenced
-  on apt.spacebarlabs.com, including mise and the Space Bar Labs
-  repository itself.
+  on apt.spacebarlabs.com, including mise, Google Chrome, and the
+  Space Bar Labs repository itself.
