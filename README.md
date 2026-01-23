@@ -18,10 +18,7 @@ rm /tmp/sbl-apt-repos.deb
 sudo apt update
 ```
 
-This bootstrap package (`sbl-apt-repos`) configures APT repositories for:
-- **mise**: A polyglot runtime manager (replaces asdf, nvm, pyenv, etc.)
-- **Google Chrome**: The Google Chrome web browser
-- **apt.spacebarlabs.com**: All Space Bar Labs packages
+This bootstrap package (`sbl-apt-repos`) configures APT repositories for all Space Bar Labs dependencies.
 
 ### Installing Packages
 
