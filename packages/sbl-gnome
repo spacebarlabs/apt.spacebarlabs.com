@@ -1,0 +1,13 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-gnome
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  sbl-gui-utils,
+  gnome-shell-extension-appindicator,
+  gnome-shell-extension-gsconnect,
+  gnome-shell-extensions,
+Description: Space Bar Labs GNOME Extensions
+  GNOME shell extensions including AppIndicator, GSConnect, and core extensions.
