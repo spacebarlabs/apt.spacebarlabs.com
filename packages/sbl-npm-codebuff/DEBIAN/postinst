@@ -10,7 +10,7 @@ npm install -g codebuff
 # Run codebuff --version to trigger download of extra files at install time
 # Use || true to prevent installation failure if initialization has issues
 echo "Initializing codebuff..."
-codebuff --version || true
+/usr/local/bin/codebuff --version || true
 
 echo "codebuff installation/update complete."
 
