@@ -125,20 +125,16 @@ else
 fi
 
 # Add Signal repository to sources
-# Using DEB822 format for modern APT configuration
-# Note: Signal uses 'xenial' as the suite name regardless of Ubuntu version
+# Download the official sources file from Signal
 SIGNAL_SOURCE_FILE="/etc/apt/sources.list.d/signal-desktop.sources"
 
 if [ ! -f "$SIGNAL_SOURCE_FILE" ] && [ -f /usr/share/keyrings/signal-desktop-keyring.gpg ]; then
-    cat > "$SIGNAL_SOURCE_FILE" <<EOF
-Types: deb
-URIs: https://updates.signal.org/desktop/apt
-Suites: xenial
-Components: main
-Signed-By: /usr/share/keyrings/signal-desktop-keyring.gpg
-EOF
-    chmod 644 "$SIGNAL_SOURCE_FILE"
-    echo "Signal repository added to sources."
+    if curl -fsSL https://updates.signal.org/static/desktop/apt/signal-desktop.sources -o "$SIGNAL_SOURCE_FILE"; then
+        chmod 644 "$SIGNAL_SOURCE_FILE"
+        echo "Signal repository added to sources."
+    else
+        echo "Warning: Failed to download Signal repository configuration."
+    fi
 else
     if [ -f "$SIGNAL_SOURCE_FILE" ]; then
         echo "Signal repository already configured."
