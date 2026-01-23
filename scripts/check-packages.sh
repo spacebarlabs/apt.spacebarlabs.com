@@ -46,7 +46,7 @@ for FILE_PATH in packages/*; do
       [ -z "$PACKAGE_NAME" ] && continue
       
       # Skip packages that are from external repositories
-      if [ "$PACKAGE_NAME" = "mise" ] || [ "$PACKAGE_NAME" = "sbl-apt-repos" ] || [ "$PACKAGE_NAME" = "google-chrome-stable" ]; then
+      if [ "$PACKAGE_NAME" = "mise" ] || [ "$PACKAGE_NAME" = "sbl-apt-repos" ] || [ "$PACKAGE_NAME" = "google-chrome-stable" ] || [ "$PACKAGE_NAME" = "signal-desktop" ]; then
         echo "      Skipping '$PACKAGE_NAME' (external repository)"
         continue
       fi
