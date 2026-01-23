@@ -12,4 +12,4 @@ Depends:
   gnome-shell-pomodoro,
   indicator-multiload,
 Description: Space Bar Labs GNOME Extensions
-  GNOME shell extensions including AppIndicator, GSConnect, Pomodoro, and core extensions.
+  GNOME shell extensions and system indicators including AppIndicator, GSConnect, Pomodoro, Multiload, and core extensions.
