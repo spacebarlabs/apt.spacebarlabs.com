@@ -3,6 +3,7 @@ Priority: optional
 Standards-Version: 3.9.2
 
 Package: sbl-gnome
+Architecture: all
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
   sbl-gui-utils,
