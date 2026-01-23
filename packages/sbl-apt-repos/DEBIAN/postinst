@@ -114,18 +114,22 @@ install -dm 755 /usr/share/keyrings
 
 # Download and install Signal GPG key
 if [ ! -f /usr/share/keyrings/signal-desktop-keyring.gpg ]; then
-    curl -fsSL https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor -o /usr/share/keyrings/signal-desktop-keyring.gpg
-    chmod 644 /usr/share/keyrings/signal-desktop-keyring.gpg
-    echo "Signal GPG key installed."
+    if curl -fsSL https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor -o /usr/share/keyrings/signal-desktop-keyring.gpg; then
+        chmod 644 /usr/share/keyrings/signal-desktop-keyring.gpg
+        echo "Signal GPG key installed."
+    else
+        echo "Warning: Failed to download Signal GPG key. Signal repository will not be configured."
+    fi
 else
     echo "Signal GPG key already exists."
 fi
 
 # Add Signal repository to sources
 # Using DEB822 format for modern APT configuration
+# Note: Signal uses 'xenial' as the suite name regardless of Ubuntu version
 SIGNAL_SOURCE_FILE="/etc/apt/sources.list.d/signal-desktop.sources"
 
-if [ ! -f "$SIGNAL_SOURCE_FILE" ]; then
+if [ ! -f "$SIGNAL_SOURCE_FILE" ] && [ -f /usr/share/keyrings/signal-desktop-keyring.gpg ]; then
     cat > "$SIGNAL_SOURCE_FILE" <<EOF
 Types: deb
 URIs: https://updates.signal.org/desktop/apt
@@ -136,7 +140,9 @@ EOF
     chmod 644 "$SIGNAL_SOURCE_FILE"
     echo "Signal repository added to sources."
 else
-    echo "Signal repository already configured."
+    if [ -f "$SIGNAL_SOURCE_FILE" ]; then
+        echo "Signal repository already configured."
+    fi
 fi
 
 echo "Repository configuration complete. Please run 'sudo apt update' to refresh package lists."
