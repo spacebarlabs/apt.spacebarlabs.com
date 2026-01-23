@@ -106,6 +106,41 @@ else
     echo "Docker repository already configured."
 fi
 
+# Configure Signal repository
+echo "Configuring Signal repository..."
+
+# Create keyrings directory if it doesn't exist (using /usr/share/keyrings for Signal)
+install -dm 755 /usr/share/keyrings
+
+# Download and install Signal GPG key
+if [ ! -f /usr/share/keyrings/signal-desktop-keyring.gpg ]; then
+    if curl -fsSL https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor -o /usr/share/keyrings/signal-desktop-keyring.gpg; then
+        chmod 644 /usr/share/keyrings/signal-desktop-keyring.gpg
+        echo "Signal GPG key installed."
+    else
+        echo "Warning: Failed to download Signal GPG key. Signal repository will not be configured."
+    fi
+else
+    echo "Signal GPG key already exists."
+fi
+
+# Add Signal repository to sources
+# Download the official sources file from Signal
+SIGNAL_SOURCE_FILE="/etc/apt/sources.list.d/signal-desktop.sources"
+
+if [ ! -f "$SIGNAL_SOURCE_FILE" ] && [ -f /usr/share/keyrings/signal-desktop-keyring.gpg ]; then
+    if curl -fsSL https://updates.signal.org/static/desktop/apt/signal-desktop.sources -o "$SIGNAL_SOURCE_FILE"; then
+        chmod 644 "$SIGNAL_SOURCE_FILE"
+        echo "Signal repository added to sources."
+    else
+        echo "Warning: Failed to download Signal repository configuration."
+    fi
+else
+    if [ -f "$SIGNAL_SOURCE_FILE" ]; then
+        echo "Signal repository already configured."
+    fi
+fi
+
 echo "Repository configuration complete. Please run 'sudo apt update' to refresh package lists."
 
 exit 0
