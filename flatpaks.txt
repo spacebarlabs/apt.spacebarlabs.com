@@ -9,6 +9,7 @@ deskflow: org.deskflow.deskflow
 easy-effects: com.github.wwmm.easyeffects
 eloquent: re.sonny.Eloquent
 emergency-alerts: io.github.leolost2605.emergency-alerts
+emote: com.tomjwatson.Emote
 eyedropper: com.github.finefindus.eyedropper
 foliate: com.github.johnfactotum.Foliate
 logseq: com.logseq.Logseq
