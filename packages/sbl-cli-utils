@@ -5,11 +5,11 @@ Standards-Version: 3.9.2
 Package: sbl-cli-utils
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
-  sbl-apt-repos,
   bash,
   btop,
   curl,
   entr,
+  fd-find,
   git,
   git-annex,
   git-crypt,
@@ -25,6 +25,7 @@ Depends:
   openssh-client,
   rlwrap,
   ruby,
+  sbl-apt-repos,
   tmux,
   trash-cli,
   tree,
