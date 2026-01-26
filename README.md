@@ -11,7 +11,7 @@ To use packages from apt.spacebarlabs.com, first install the repository configur
 ```bash
 # Download and install the repository configuration package
 wget -qO /tmp/sbl-apt-repos.deb https://apt.spacebarlabs.com/sbl-apt-repos.deb
-sudo apt install -y /tmp/sbl-apt-repos.deb
+sudo apt install -y /tmp/sbl-apt-repos.deb # NOTE: this must be a path, even just ./sbl-apt-repos.deb
 rm /tmp/sbl-apt-repos.deb
 
 # Update package lists to see newly available packages
