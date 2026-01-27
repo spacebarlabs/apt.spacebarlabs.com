@@ -14,5 +14,7 @@ Depends:
   gnome-tweak-tool,
   indicator-multiload,
   sbl-flatpak-emote,
+Recommends:
+  lollypop,
 Description: Space Bar Labs GNOME Extensions
   GNOME shell extensions and system indicators including AppIndicator, GSConnect, Pomodoro, Multiload, and core extensions.
