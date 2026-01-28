@@ -123,4 +123,59 @@ for item in packages/*; do
   fi
 done
 
+# ---------------------------------------------------------
+# Build sbl-whisper-cpp-native (Bundled Source)
+# ---------------------------------------------------------
+echo "Building sbl-whisper-cpp-native package with bundled source..."
+
+# 1. Fetch latest tag
+LATEST_TAG=$(curl -s https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+CLEAN_VERSION="${LATEST_TAG#v}"
+echo "   Target Version: $CLEAN_VERSION"
+
+# 2. Prepare temporary workspace
+WHISPER_TMP=$(mktemp -d)
+SRC_DIR="$WHISPER_TMP/usr/src/whisper.cpp"
+mkdir -p "$SRC_DIR"
+mkdir -p "$WHISPER_TMP/DEBIAN"
+
+# 3. Download and bundle the SOURCE code
+SOURCE_URL="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/${LATEST_TAG}.tar.gz"
+echo "   Bundling source from $SOURCE_URL..."
+curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1
+
+# 4. Create the Control File
+# Note the Version matches the GitHub tag for easy 'apt upgrade'
+cat > "$WHISPER_TMP/DEBIAN/control" <<EOF
+Package: sbl-whisper-cpp-native
+Version: 1:${CLEAN_VERSION}
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: build-essential, cmake, git, ffmpeg
+Description: Whisper.cpp (Source-bundled, Locally Optimized)
+ This package bundles the whisper.cpp source code and compiles it 
+ locally during installation to ensure maximum performance 
+ (AVX-512, AVX2, etc.) for this specific CPU.
+EOF
+
+# 5. Create the postinst script (Compiles the bundled source)
+cat > "$WHISPER_TMP/DEBIAN/postinst" <<EOF
+#!/bin/bash
+set -e
+echo "Building whisper.cpp from bundled source for native CPU performance..."
+cd /usr/src/whisper.cpp
+cmake -B build -DGGML_NATIVE=ON
+cmake --build build --config Release -j\$(nproc)
+cp build/bin/main /usr/local/bin/whisper-cpp
+chmod +x /usr/local/bin/whisper-cpp
+echo "✅ whisper-cpp is now optimized and installed to /usr/local/bin/whisper-cpp"
+EOF
+chmod 755 "$WHISPER_TMP/DEBIAN/postinst"
+
+# 6. Build the .deb
+dpkg-deb --build "$WHISPER_TMP" "dist/sbl-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
+rm -rf "$WHISPER_TMP"
+
 echo "✅ All packages built successfully"
