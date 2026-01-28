@@ -1,0 +1,8 @@
+Origin: Space Bar Labs
+Label: Infrastructure
+Suite: stable
+Codename: all
+Architectures: all
+Components: main
+Description: Meta-packages for my setups
+Date: Wed, 28 Jan 2026 17:43:47 +0000
