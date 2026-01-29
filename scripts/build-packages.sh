@@ -129,21 +129,26 @@ done
 echo "Building sbl-github-whisper-cpp-native package..."
 
 # 1. Fetch latest tag and version
-LATEST_TAG=$(curl -s https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-CLEAN_VERSION="${LATEST_TAG#v}"
+LATEST_TAG=$(curl -s https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-# 2. Prepare temporary workspace
-WHISPER_TMP=$(mktemp -d)
-SRC_DIR="$WHISPER_TMP/usr/src/whisper.cpp"
-mkdir -p "$SRC_DIR"
-mkdir -p "$WHISPER_TMP/DEBIAN"
-
-# 3. Bundle SOURCE code
-SOURCE_URL="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/${LATEST_TAG}.tar.gz"
-curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1
-
-# 4. Create Control File
-cat > "$WHISPER_TMP/DEBIAN/control" <<EOF
+# Skip if we can't fetch the version
+if [ -z "$LATEST_TAG" ]; then
+  echo "⚠️  Skipping sbl-github-whisper-cpp-native: Could not fetch version from GitHub"
+else
+  CLEAN_VERSION="${LATEST_TAG#v}"
+  
+  # 2. Prepare temporary workspace
+  WHISPER_TMP=$(mktemp -d)
+  SRC_DIR="$WHISPER_TMP/usr/src/whisper.cpp"
+  mkdir -p "$SRC_DIR"
+  mkdir -p "$WHISPER_TMP/DEBIAN"
+  
+  # 3. Bundle SOURCE code
+  SOURCE_URL="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/${LATEST_TAG}.tar.gz"
+  if curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1; then
+    
+    # 4. Create Control File
+    cat > "$WHISPER_TMP/DEBIAN/control" <<EOF
 Package: sbl-github-whisper-cpp-native
 Version: 1:${CLEAN_VERSION}
 Section: misc
@@ -156,8 +161,8 @@ Description: Whisper.cpp (Locally Optimized)
  Correctly maps binaries following the Dec 2024 migration.
 EOF
 
-# 5. Updated Postinst (Official Migration Mapping)
-cat > "$WHISPER_TMP/DEBIAN/postinst" <<EOF
+    # 5. Updated Postinst (Official Migration Mapping)
+    cat > "$WHISPER_TMP/DEBIAN/postinst" <<EOF
 #!/bin/bash
 set -e
 echo "Building whisper.cpp natively..."
@@ -176,8 +181,8 @@ ln -sf /usr/local/bin/whisper-cli /usr/local/bin/whisper-cpp
 ln -sf /usr/local/bin/whisper-cli /usr/local/bin/whisper-whisper-cpp
 EOF
 
-# 6. Updated Prerm (Cleanup Symlinks)
-cat > "$WHISPER_TMP/DEBIAN/prerm" <<EOF
+    # 6. Updated Prerm (Cleanup Symlinks)
+    cat > "$WHISPER_TMP/DEBIAN/prerm" <<EOF
 #!/bin/bash
 set -e
 case "\$1" in
@@ -189,8 +194,8 @@ case "\$1" in
 esac
 EOF
 
-# 7. NEW Postrm (Cleanup Compile Artifacts)
-cat > "$WHISPER_TMP/DEBIAN/postrm" <<EOF
+    # 7. NEW Postrm (Cleanup Compile Artifacts)
+    cat > "$WHISPER_TMP/DEBIAN/postrm" <<EOF
 #!/bin/bash
 set -e
 case "\$1" in
@@ -203,8 +208,56 @@ case "\$1" in
 esac
 EOF
 
-chmod 755 "$WHISPER_TMP/DEBIAN/"*
-dpkg-deb --build "$WHISPER_TMP" "dist/sbl-github-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
-rm -rf "$WHISPER_TMP"
+    chmod 755 "$WHISPER_TMP/DEBIAN/"*
+    dpkg-deb --build "$WHISPER_TMP" "dist/sbl-github-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
+    rm -rf "$WHISPER_TMP"
+  else
+    echo "⚠️  Skipping sbl-github-whisper-cpp-native: Could not download source"
+    rm -rf "$WHISPER_TMP"
+  fi
+fi
+
+# ---------------------------------------------------------
+# Build sbl-handy (Repackage from GitHub Release)
+# ---------------------------------------------------------
+echo "Building sbl-handy package..."
+
+# 1. Fetch latest tag and version
+# Try to get latest version from GitHub API
+HANDY_LATEST_TAG=$(curl -s https://api.github.com/repos/cjpais/Handy/releases/latest 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+# Fallback to a known working version if API is blocked or fails
+if [ -z "$HANDY_LATEST_TAG" ] || [ "$HANDY_LATEST_TAG" = "null" ]; then
+  echo "Could not fetch latest version from API, using v0.7.0"
+  HANDY_LATEST_TAG="v0.7.0"
+fi
+
+echo "Using Handy version: $HANDY_LATEST_TAG"
+HANDY_CLEAN_VERSION="${HANDY_LATEST_TAG#v}"
+
+# 2. Download the original Debian package
+HANDY_TMP=$(mktemp -d)
+cd "$HANDY_TMP"
+HANDY_DEB_URL="https://github.com/cjpais/Handy/releases/download/${HANDY_LATEST_TAG}/handy_${HANDY_CLEAN_VERSION}_amd64.deb"
+echo "Downloading: $HANDY_DEB_URL"
+
+# Try wget first, then curl as fallback
+if ! wget -q "$HANDY_DEB_URL" -O handy_original.deb; then
+  curl -L -o handy_original.deb "$HANDY_DEB_URL"
+fi
+
+# 3. Extract the original package
+dpkg-deb -x handy_original.deb extracted
+dpkg-deb -e handy_original.deb extracted/DEBIAN
+
+# 4. Update the package name in control file
+sed -i 's/^Package:.*/Package: sbl-handy/' extracted/DEBIAN/control
+
+# 5. Rebuild the package with new name
+dpkg-deb --build extracted "$WORKSPACE/dist/sbl-handy_${HANDY_CLEAN_VERSION}_amd64.deb"
+
+# 6. Cleanup
+cd "$WORKSPACE"
+rm -rf "$HANDY_TMP"
 
 echo "✅ All packages built successfully"
