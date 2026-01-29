@@ -222,42 +222,71 @@ fi
 # ---------------------------------------------------------
 echo "Building sbl-handy package..."
 
-# 1. Fetch latest tag and version
-# Try to get latest version from GitHub API
-HANDY_LATEST_TAG=$(curl -s https://api.github.com/repos/cjpais/Handy/releases/latest 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-
-# Fallback to a known working version if API is blocked or fails
-if [ -z "$HANDY_LATEST_TAG" ] || [ "$HANDY_LATEST_TAG" = "null" ]; then
-  echo "Could not fetch latest version from API, using v0.7.0"
-  HANDY_LATEST_TAG="v0.7.0"
-fi
-
-echo "Using Handy version: $HANDY_LATEST_TAG"
-HANDY_CLEAN_VERSION="${HANDY_LATEST_TAG#v}"
-
-# 2. Download the original Debian package
-HANDY_TMP=$(mktemp -d)
-cd "$HANDY_TMP"
-HANDY_DEB_URL="https://github.com/cjpais/Handy/releases/download/${HANDY_LATEST_TAG}/handy_${HANDY_CLEAN_VERSION}_amd64.deb"
-echo "Downloading: $HANDY_DEB_URL"
-
-# Try wget first, then curl as fallback
-if ! wget -q "$HANDY_DEB_URL" -O handy_original.deb; then
-  curl -L -o handy_original.deb "$HANDY_DEB_URL"
-fi
-
-# 3. Extract the original package
-dpkg-deb -x handy_original.deb extracted
-dpkg-deb -e handy_original.deb extracted/DEBIAN
-
-# 4. Update the package name in control file
-sed -i 's/^Package:.*/Package: sbl-handy/' extracted/DEBIAN/control
-
-# 5. Rebuild the package with new name
-dpkg-deb --build extracted "$WORKSPACE/dist/sbl-handy_${HANDY_CLEAN_VERSION}_amd64.deb"
-
-# 6. Cleanup
-cd "$WORKSPACE"
-rm -rf "$HANDY_TMP"
+# Use a subshell to avoid interfering with set -e for the rest of the script
+(
+  # 1. Fetch latest tag and version
+  # Try to get latest version from GitHub API
+  HANDY_LATEST_TAG=$(curl -s https://api.github.com/repos/cjpais/Handy/releases/latest 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  
+  # Fallback to a known working version if API is blocked or fails
+  # Note: v0.7.0 is the fallback version as of 2026-01-29. Update this as needed.
+  if [ -z "$HANDY_LATEST_TAG" ] || [ "$HANDY_LATEST_TAG" = "null" ]; then
+    echo "Could not fetch latest version from API, using v0.7.0"
+    HANDY_LATEST_TAG="v0.7.0"
+  fi
+  
+  echo "Using Handy version: $HANDY_LATEST_TAG"
+  HANDY_CLEAN_VERSION="${HANDY_LATEST_TAG#v}"
+  
+  # 2. Download the original Debian package
+  # Note: Only amd64 architecture is supported
+  HANDY_TMP=$(mktemp -d)
+  cd "$HANDY_TMP"
+  HANDY_DEB_URL="https://github.com/cjpais/Handy/releases/download/${HANDY_LATEST_TAG}/handy_${HANDY_CLEAN_VERSION}_amd64.deb"
+  echo "Downloading: $HANDY_DEB_URL"
+  
+  # Try wget first, then curl as fallback
+  if ! wget -q "$HANDY_DEB_URL" -O handy_original.deb; then
+    if ! curl -L -o handy_original.deb "$HANDY_DEB_URL"; then
+      echo "⚠️  Failed to download Handy package, skipping"
+      rm -rf "$HANDY_TMP"
+      exit 1
+    fi
+  fi
+  
+  # Verify the download was successful
+  if [ ! -f handy_original.deb ] || [ ! -s handy_original.deb ]; then
+    echo "⚠️  Downloaded file is missing or empty, skipping"
+    rm -rf "$HANDY_TMP"
+    exit 1
+  fi
+  
+  # 3. Extract the original package
+  if ! dpkg-deb -x handy_original.deb extracted; then
+    echo "⚠️  Failed to extract package contents, skipping"
+    rm -rf "$HANDY_TMP"
+    exit 1
+  fi
+  
+  if ! dpkg-deb -e handy_original.deb extracted/DEBIAN; then
+    echo "⚠️  Failed to extract package control files, skipping"
+    rm -rf "$HANDY_TMP"
+    exit 1
+  fi
+  
+  # 4. Update the package name in control file
+  # Note: Only Package field is renamed. Other metadata fields (Maintainer, etc.) are preserved from upstream.
+  sed -i 's/^Package:.*/Package: sbl-handy/' extracted/DEBIAN/control
+  
+  # 5. Rebuild the package with new name
+  if ! dpkg-deb --build extracted "$WORKSPACE/dist/sbl-handy_${HANDY_CLEAN_VERSION}_amd64.deb"; then
+    echo "⚠️  Failed to rebuild package, skipping"
+    rm -rf "$HANDY_TMP"
+    exit 1
+  fi
+  
+  # 6. Cleanup
+  rm -rf "$HANDY_TMP"
+) || echo "⚠️  Skipping sbl-handy: Build failed"
 
 echo "✅ All packages built successfully"

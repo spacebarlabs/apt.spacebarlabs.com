@@ -9,6 +9,7 @@ on:
       - '.github/workflows/**'
       - 'flatpaks.txt'    # Added: Triggers build when you add/remove apps
       - 'templates/**'    # Added: Triggers build when you edit control/postinst templates
+      - 'scripts/**'      # Added: Triggers build when build scripts are updated
 
 jobs:
   build-and-deploy:
