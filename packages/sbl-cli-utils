@@ -21,6 +21,7 @@ Depends:
   man-db,
   micro,
   mise,
+  ncal,
   neovim,
   openssh-client,
   rlwrap,
