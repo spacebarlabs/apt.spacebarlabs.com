@@ -207,4 +207,71 @@ chmod 755 "$WHISPER_TMP/DEBIAN/"*
 dpkg-deb --build "$WHISPER_TMP" "dist/sbl-github-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
 rm -rf "$WHISPER_TMP"
 
+# ---------------------------------------------------------
+# Build sbl-chawan (Chawan TUI browser)
+# ---------------------------------------------------------
+echo "Building sbl-chawan package..."
+
+# Version from the problem statement
+CHAWAN_VERSION="0.3.3"
+
+# Prepare temporary workspace
+CHAWAN_TMP=$(mktemp -d)
+cd "$CHAWAN_TMP"
+
+# Try multiple possible URL patterns for the .deb file
+DEB_URLS=(
+  "https://chawan.net/releases/chawan_${CHAWAN_VERSION}_amd64.deb"
+  "https://chawan.net/releases/chawan_${CHAWAN_VERSION}-1_amd64.deb"
+  "https://chawan.net/releases/${CHAWAN_VERSION}/chawan_${CHAWAN_VERSION}_amd64.deb"
+)
+
+DEB_FILE=""
+for url in "${DEB_URLS[@]}"; do
+  echo "Trying to download from: $url"
+  if curl -L -f -s "$url" -o "chawan_${CHAWAN_VERSION}_amd64.deb"; then
+    DEB_FILE="chawan_${CHAWAN_VERSION}_amd64.deb"
+    echo "Successfully downloaded from: $url"
+    break
+  fi
+done
+
+if [ -z "$DEB_FILE" ]; then
+  echo "❌ Failed to download Chawan .deb from any known URL"
+  echo "   This package will be skipped. Please check https://chawan.net for the correct download URL."
+  cd "$WORKSPACE"
+  rm -rf "$CHAWAN_TMP"
+else
+  # Create package structure for repackaging
+  mkdir -p repackage/DEBIAN
+  
+  # Extract the original .deb
+  dpkg-deb -x "$DEB_FILE" repackage/
+  dpkg-deb -e "$DEB_FILE" repackage/DEBIAN/
+  
+  # Create new control file with sbl- prefix
+  cat > repackage/DEBIAN/control <<EOF
+Package: sbl-chawan
+Version: 1:${CHAWAN_VERSION}
+Section: web
+Priority: optional
+Architecture: amd64
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Description: Chawan TUI Browser
+ Chawan is a terminal-based web browser with support for modern web standards.
+ This package provides the official Chawan binary distribution.
+ .
+ Original package from https://chawan.net
+EOF
+  
+  # Build the repackaged .deb
+  dpkg-deb --build repackage "$WORKSPACE/dist/sbl-chawan_1:${CHAWAN_VERSION}_amd64.deb"
+  
+  # Clean up
+  cd "$WORKSPACE"
+  rm -rf "$CHAWAN_TMP"
+  
+  echo "✅ sbl-chawan package built successfully"
+fi
+
 echo "✅ All packages built successfully"
