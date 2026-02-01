@@ -217,45 +217,55 @@ fi
 # ---------------------------------------------------------
 echo "Building sbl-chawan package..."
 
-# Version from the problem statement
-CHAWAN_VERSION="0.3.3"
+# Fetch latest version from the news page
+echo "Fetching latest Chawan version from https://chawan.net/news/index.html..."
+CHAWAN_VERSION=$(curl -s https://chawan.net/news/index.html | grep -oP 'Chawan \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
 
-# Prepare temporary workspace
-CHAWAN_TMP=$(mktemp -d)
-cd "$CHAWAN_TMP"
-
-# Try multiple possible URL patterns for the .deb file
-DEB_URLS=(
-  "https://chawan.net/releases/chawan_${CHAWAN_VERSION}_amd64.deb"
-  "https://chawan.net/releases/chawan_${CHAWAN_VERSION}-1_amd64.deb"
-  "https://chawan.net/releases/${CHAWAN_VERSION}/chawan_${CHAWAN_VERSION}_amd64.deb"
-)
-
-DEB_FILE=""
-for url in "${DEB_URLS[@]}"; do
-  echo "Trying to download from: $url"
-  if curl -L -f -s "$url" -o "chawan_${CHAWAN_VERSION}_amd64.deb"; then
-    DEB_FILE="chawan_${CHAWAN_VERSION}_amd64.deb"
-    echo "Successfully downloaded from: $url"
-    break
-  fi
-done
-
-if [ -z "$DEB_FILE" ]; then
-  echo "❌ Failed to download Chawan .deb from any known URL"
-  echo "   This package will be skipped. Please check https://chawan.net for the correct download URL."
-  cd "$WORKSPACE"
-  rm -rf "$CHAWAN_TMP"
+if [ -z "$CHAWAN_VERSION" ]; then
+  echo "❌ Failed to determine latest Chawan version from news page"
+  echo "   This package will be skipped."
 else
-  # Create package structure for repackaging
-  mkdir -p repackage/DEBIAN
+  echo "Latest Chawan version: $CHAWAN_VERSION"
+fi
+
+# Only proceed if we successfully fetched a version
+if [ -n "$CHAWAN_VERSION" ]; then
+  # Prepare temporary workspace
+  CHAWAN_TMP=$(mktemp -d)
+  cd "$CHAWAN_TMP"
   
-  # Extract the original .deb
-  dpkg-deb -x "$DEB_FILE" repackage/
-  dpkg-deb -e "$DEB_FILE" repackage/DEBIAN/
+  # Try multiple possible URL patterns for the .deb file
+  DEB_URLS=(
+    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}_amd64.deb"
+    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}-1_amd64.deb"
+    "https://chawan.net/releases/${CHAWAN_VERSION}/chawan_${CHAWAN_VERSION}_amd64.deb"
+  )
   
-  # Create new control file with sbl- prefix
-  cat > repackage/DEBIAN/control <<EOF
+  DEB_FILE=""
+  for url in "${DEB_URLS[@]}"; do
+    echo "Trying to download from: $url"
+    if curl -L -f -s "$url" -o "chawan_${CHAWAN_VERSION}_amd64.deb"; then
+      DEB_FILE="chawan_${CHAWAN_VERSION}_amd64.deb"
+      echo "Successfully downloaded from: $url"
+      break
+    fi
+  done
+  
+  if [ -z "$DEB_FILE" ]; then
+    echo "❌ Failed to download Chawan .deb from any known URL"
+    echo "   This package will be skipped. Please check https://chawan.net for the correct download URL."
+    cd "$WORKSPACE"
+    rm -rf "$CHAWAN_TMP"
+  else
+    # Create package structure for repackaging
+    mkdir -p repackage/DEBIAN
+    
+    # Extract the original .deb
+    dpkg-deb -x "$DEB_FILE" repackage/
+    dpkg-deb -e "$DEB_FILE" repackage/DEBIAN/
+    
+    # Create new control file with sbl- prefix
+    cat > repackage/DEBIAN/control <<EOF
 Package: sbl-chawan
 Version: 1:${CHAWAN_VERSION}
 Section: web
@@ -268,15 +278,17 @@ Description: Chawan TUI Browser
  .
  Original package from https://chawan.net
 EOF
-  
-  # Build the repackaged .deb
-  dpkg-deb --build repackage "$WORKSPACE/dist/sbl-chawan_1:${CHAWAN_VERSION}_amd64.deb"
-  
-  # Clean up
-  cd "$WORKSPACE"
-  rm -rf "$CHAWAN_TMP"
-  
-  echo "✅ sbl-chawan package built successfully"
-fi
+    
+    # Build the repackaged .deb
+    dpkg-deb --build repackage "$WORKSPACE/dist/sbl-chawan_1:${CHAWAN_VERSION}_amd64.deb"
+    
+    # Clean up
+    cd "$WORKSPACE"
+    rm -rf "$CHAWAN_TMP"
+    
+    echo "✅ sbl-chawan package built successfully"
+  fi
+
+fi  # End of CHAWAN_VERSION check
 
 echo "✅ All packages built successfully"
