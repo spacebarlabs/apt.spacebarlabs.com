@@ -140,7 +140,10 @@ mkdir -p "$WHISPER_TMP/DEBIAN"
 
 # 3. Bundle SOURCE code
 SOURCE_URL="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/${LATEST_TAG}.tar.gz"
-curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1
+if ! curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1; then
+  echo "❌ Failed to download whisper.cpp source. Skipping this package."
+  rm -rf "$WHISPER_TMP"
+else
 
 # 4. Create Control File
 cat > "$WHISPER_TMP/DEBIAN/control" <<EOF
@@ -206,6 +209,8 @@ EOF
 chmod 755 "$WHISPER_TMP/DEBIAN/"*
 dpkg-deb --build "$WHISPER_TMP" "dist/sbl-github-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
 rm -rf "$WHISPER_TMP"
+echo "✅ sbl-github-whisper-cpp-native package built successfully"
+fi
 
 # ---------------------------------------------------------
 # Build sbl-chawan (Chawan TUI browser)
