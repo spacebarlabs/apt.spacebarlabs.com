@@ -1,0 +1,10 @@
+Package: sbl-snap-config
+Version: 1:1.0
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: snapd
+Description: Space Bar Labs Snap Configuration
+  Configures snap system settings including refresh retention policy.
+  Sets refresh.retain=2 to keep only 2 previous versions of snaps.

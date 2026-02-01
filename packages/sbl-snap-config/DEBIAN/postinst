@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+echo "Configuring snap system settings..."
+
+# Set snap refresh retention to 2 versions
+if command -v snap >/dev/null 2>&1; then
+    snap set system refresh.retain=2
+    echo "Snap refresh retention set to 2 versions."
+else
+    echo "Warning: snap command not found. Skipping configuration."
+fi
+
+exit 0
