@@ -40,7 +40,6 @@ shopt -u nullglob
 # Copy index.html and replace package list placeholder
 if ! cp "../index.html" .; then
   echo "❌ Failed to copy index.html"
-  rm -f "$PACKAGE_LIST_FILE"
   exit 1
 fi
 
