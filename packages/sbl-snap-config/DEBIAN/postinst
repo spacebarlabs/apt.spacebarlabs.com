@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+echo "Configuring snap system settings..."
+
+# Set snap refresh retention to 2 versions
+snap set system refresh.retain=2
+echo "Snap refresh retention set to 2 versions."
+
+exit 0
