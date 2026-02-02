@@ -34,9 +34,15 @@ done
 
 # Copy index.html and replace package list placeholder
 cp "../index.html" .
+
 if [ -s "$PACKAGE_LIST_FILE" ]; then
   # Use sed to replace the placeholder with the contents of the file
-  sed -i -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/r $PACKAGE_LIST_FILE" -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/d" index.html
+  # Note: -i works differently on macOS vs Linux, but this runs in Ubuntu CI
+  if ! sed -i -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/r $PACKAGE_LIST_FILE" -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/d" index.html; then
+    echo "❌ Failed to update index.html with package list"
+    rm -f "$PACKAGE_LIST_FILE"
+    exit 1
+  fi
 else
   # If no packages found, show a message
   sed -i 's/<!-- PACKAGE_LIST_PLACEHOLDER -->/<li>No packages available<\/li>/g' index.html
