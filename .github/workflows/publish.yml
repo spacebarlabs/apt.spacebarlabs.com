@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'packages/**'
-      - '.github/workflows/**'
-      - 'flatpaks.txt'    # Added: Triggers build when you add/remove apps
-      - 'templates/**'    # Added: Triggers build when you edit control/postinst templates
 
 jobs:
   build-and-deploy:
