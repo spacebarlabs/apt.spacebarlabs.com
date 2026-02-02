@@ -24,11 +24,11 @@ dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 echo "apt.spacebarlabs.com" > CNAME
 
 # 4. Generate package list for index.html
-# Create a temporary file with the package list
-PACKAGE_LIST_FILE=$(mktemp -t apt-packages.XXXXXX)
+# Create a temporary file with the package list (POSIX-compliant)
+PACKAGE_LIST_FILE=$(mktemp /tmp/apt-packages.XXXXXX)
 
 # Ensure cleanup on exit
-trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT ERR INT TERM
+trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT
 
 # Enable nullglob to handle case when no .deb files exist
 shopt -s nullglob
