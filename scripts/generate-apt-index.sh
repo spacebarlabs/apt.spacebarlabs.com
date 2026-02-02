@@ -30,14 +30,16 @@ PACKAGE_LIST_FILE=$(mktemp)
 # Enable nullglob to handle case when no .deb files exist
 shopt -s nullglob
 for deb_file in *.deb; do
-  if [ -f "$deb_file" ]; then
-    echo "            <li>${deb_file}</li>" >> "$PACKAGE_LIST_FILE"
-  fi
+  echo "            <li>${deb_file}</li>" >> "$PACKAGE_LIST_FILE"
 done
 shopt -u nullglob
 
 # Copy index.html and replace package list placeholder
-cp "../index.html" .
+if ! cp "../index.html" .; then
+  echo "❌ Failed to copy index.html"
+  rm -f "$PACKAGE_LIST_FILE"
+  exit 1
+fi
 
 if [ -s "$PACKAGE_LIST_FILE" ]; then
   # Use sed to replace the placeholder with the contents of the file
