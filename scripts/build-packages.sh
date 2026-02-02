@@ -234,16 +234,19 @@ if [ -n "$CHAWAN_VERSION" ]; then
   CHAWAN_TMP=$(mktemp -d)
   cd "$CHAWAN_TMP"
   
-  # Try multiple possible URL patterns for the .deb file
+  # Create a hyphenated version string (e.g., convert 0.3.3 to 0-3-3)
+  # This is required for the Sourcehut filename format
+  VERSION_HYPHENS="${CHAWAN_VERSION//./-}"
+
+  # Updated URL pattern pointing to git.sr.ht
   DEB_URLS=(
-    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}_amd64.deb"
-    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}-1_amd64.deb"
-    "https://chawan.net/releases/${CHAWAN_VERSION}/chawan_${CHAWAN_VERSION}_amd64.deb"
+    "https://git.sr.ht/~bptato/chawan/refs/download/v${CHAWAN_VERSION}/chawan-${VERSION_HYPHENS}-amd64.deb"
   )
   
   DEB_FILE=""
   for url in "${DEB_URLS[@]}"; do
     echo "Trying to download from: $url"
+    # We save it as the standard dotted name to keep the rest of your script compatible
     if curl -L -f -s "$url" -o "chawan_${CHAWAN_VERSION}_amd64.deb"; then
       DEB_FILE="chawan_${CHAWAN_VERSION}_amd64.deb"
       echo "Successfully downloaded from: $url"
@@ -253,7 +256,7 @@ if [ -n "$CHAWAN_VERSION" ]; then
   
   if [ -z "$DEB_FILE" ]; then
     echo "❌ Failed to download Chawan .deb from any known URL"
-    echo "   This package will be skipped. Please check https://chawan.net for the correct download URL."
+    echo "   This package will be skipped. Please check https://git.sr.ht/~bptato/chawan for the correct download URL."
     cd "$WORKSPACE"
     rm -rf "$CHAWAN_TMP"
   else
