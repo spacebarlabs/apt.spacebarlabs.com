@@ -27,6 +27,9 @@ echo "apt.spacebarlabs.com" > CNAME
 # Create a temporary file with the package list
 PACKAGE_LIST_FILE=$(mktemp)
 
+# Ensure cleanup on exit
+trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT ERR INT TERM
+
 # Enable nullglob to handle case when no .deb files exist
 shopt -s nullglob
 for deb_file in *.deb; do
@@ -46,19 +49,14 @@ if [ -s "$PACKAGE_LIST_FILE" ]; then
   # Note: -i works differently on macOS vs Linux, but this runs in Ubuntu CI
   if ! sed -i -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/r $PACKAGE_LIST_FILE" -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/d" index.html; then
     echo "❌ Failed to update index.html with package list"
-    rm -f "$PACKAGE_LIST_FILE"
     exit 1
   fi
 else
   # If no packages found, show a message (should not happen in production)
   if ! sed -i 's/<!-- PACKAGE_LIST_PLACEHOLDER -->/<li>No packages available<\/li>/g' index.html; then
     echo "❌ Failed to update index.html with fallback message"
-    rm -f "$PACKAGE_LIST_FILE"
     exit 1
   fi
 fi
-
-# Clean up temporary file
-rm -f "$PACKAGE_LIST_FILE"
 
 echo "✅ APT index generated successfully"
