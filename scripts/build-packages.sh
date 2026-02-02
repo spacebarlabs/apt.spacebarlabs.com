@@ -303,7 +303,7 @@ HANDY_LATEST_TAG=$(curl -s https://api.github.com/repos/cjpais/Handy/releases/la
 # If API fails (blocked or unavailable), try scraping the releases page
 if [ -z "$HANDY_LATEST_TAG" ]; then
   echo "GitHub API unavailable, trying to fetch from releases page..."
-  HANDY_LATEST_TAG=$(curl -s https://github.com/cjpais/Handy/releases 2>/dev/null | grep -oP '/cjpais/Handy/releases/tag/v[0-9]+\.[0-9]+\.[0-9]+' | head -1 | sed 's/.*\(v[0-9.]*\)$/\1/')
+  HANDY_LATEST_TAG=$(curl -s https://github.com/cjpais/Handy/releases 2>/dev/null | grep -o '/cjpais/Handy/releases/tag/v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*' | head -1 | sed 's/.*\/\(v[0-9.]*\)$/\1/')
 fi
 
 if [ -z "$HANDY_LATEST_TAG" ]; then
@@ -338,7 +338,9 @@ else
     ORIGINAL_DEPENDS=$(grep "^Depends:" repackage/DEBIAN/control | sed 's/^Depends: //')
     
     # Create new control file with sbl- prefix
-    cat > repackage/DEBIAN/control <<EOF
+    # Only include Depends field if original package had dependencies
+    if [ -n "$ORIGINAL_DEPENDS" ]; then
+      cat > repackage/DEBIAN/control <<EOF
 Package: sbl-handy
 Version: 1:${HANDY_VERSION}
 Section: utils
@@ -359,6 +361,28 @@ Description: Handy Speech-to-Text Application
  .
  Original package from https://github.com/cjpais/Handy
 EOF
+    else
+      cat > repackage/DEBIAN/control <<EOF
+Package: sbl-handy
+Version: 1:${HANDY_VERSION}
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Description: Handy Speech-to-Text Application
+ Handy is a free, open source, and extensible speech-to-text application
+ that works completely offline. Built with Tauri (Rust + React/TypeScript),
+ it provides simple, privacy-focused speech transcription.
+ .
+ Features:
+  - Press a shortcut, speak, and have your words appear in any text field
+  - Completely offline - your voice stays on your computer
+  - Uses Whisper models with GPU acceleration when available
+  - Works on Linux with various desktop environments
+ .
+ Original package from https://github.com/cjpais/Handy
+EOF
+    fi
     
     # Build the repackaged .deb
     dpkg-deb --build repackage "$WORKSPACE/dist/sbl-handy_1:${HANDY_VERSION}_amd64.deb"
