@@ -24,8 +24,8 @@ dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 echo "apt.spacebarlabs.com" > CNAME
 
 # 4. Generate package list for index.html
-# Create a temporary file with the package list (POSIX-compliant)
-PACKAGE_LIST_FILE=$(mktemp /tmp/apt-packages.XXXXXX)
+# Create a temporary file with the package list
+PACKAGE_LIST_FILE=$(mktemp)
 
 # Ensure cleanup on exit
 trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT
@@ -44,7 +44,9 @@ if ! cp "../index.html" .; then
 fi
 
 if [ -s "$PACKAGE_LIST_FILE" ]; then
-  # Use sed to replace the placeholder with the contents of the file
+  # Use sed to replace the placeholder with the contents of the file:
+  # 1) Read the package list file at the placeholder location
+  # 2) Delete the placeholder line
   # Note: -i works differently on macOS vs Linux, but this runs in Ubuntu CI
   if ! sed -i -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/r $PACKAGE_LIST_FILE" -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/d" index.html; then
     echo "❌ Failed to update index.html with package list"
