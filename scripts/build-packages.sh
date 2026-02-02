@@ -7,17 +7,17 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source common utilities and build modules
-# shellcheck source=scripts/lib/common.sh
+# shellcheck source=scripts/lib/common.sh disable=SC1091
 source "$SCRIPT_DIR/lib/common.sh"
-# shellcheck source=scripts/lib/build-flatpak-packages.sh
+# shellcheck source=scripts/lib/build-flatpak-packages.sh disable=SC1091
 source "$SCRIPT_DIR/lib/build-flatpak-packages.sh"
-# shellcheck source=scripts/lib/build-regular-packages.sh
+# shellcheck source=scripts/lib/build-regular-packages.sh disable=SC1091
 source "$SCRIPT_DIR/lib/build-regular-packages.sh"
-# shellcheck source=scripts/lib/build-whisper-cpp.sh
+# shellcheck source=scripts/lib/build-whisper-cpp.sh disable=SC1091
 source "$SCRIPT_DIR/lib/build-whisper-cpp.sh"
-# shellcheck source=scripts/lib/build-chawan.sh
+# shellcheck source=scripts/lib/build-chawan.sh disable=SC1091
 source "$SCRIPT_DIR/lib/build-chawan.sh"
-# shellcheck source=scripts/lib/build-handy.sh
+# shellcheck source=scripts/lib/build-handy.sh disable=SC1091
 source "$SCRIPT_DIR/lib/build-handy.sh"
 
 # Get workspace and version
