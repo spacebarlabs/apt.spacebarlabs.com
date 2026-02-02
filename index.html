@@ -2,17 +2,125 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=https://github.com/spacebarlabs/apt.spacebarlabs.com">
-
-    <script type="text/javascript">
-        window.location.href = "https://github.com/spacebarlabs/apt.spacebarlabs.com";
-    </script>
-
-    <link rel="canonical" href="https://github.com/spacebarlabs/apt.spacebarlabs.com" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Bar Labs APT Repository</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        .logo {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 300px;
+            height: auto;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .description {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .installation {
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .installation h2 {
+            margin-top: 0;
+            color: #0366d6;
+        }
+        .packages {
+            margin-top: 30px;
+        }
+        .packages h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #e1e4e8;
+            padding-bottom: 10px;
+        }
+        .package-list {
+            list-style: none;
+            padding: 0;
+        }
+        .package-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f6f8fa;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .github-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0366d6;
+            color: white !important;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .github-link:hover {
+            background-color: #0256c7;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <p>If you are not redirected automatically, follow this link:
-    <a href="https://github.com/spacebarlabs/apt.spacebarlabs.com">https://github.com/spacebarlabs/apt.spacebarlabs.com</a></p>
+    <header>
+        <a href="https://spacebarlabs.com" class="logo">
+            <img src="https://spacebarlabs.com/SBL_Logo.svg" alt="Space Bar Labs Logo">
+        </a>
+        <h1>Space Bar Labs APT Repository</h1>
+    </header>
+
+    <section class="description">
+        <h2>About apt.spacebarlabs.com</h2>
+        <p>
+            This is a Debian APT repository providing curated packages and meta-packages 
+            to make it easy to install preferred tools on Debian-based systems. 
+            The repository includes custom packages for development tools, utilities, 
+            and applications maintained by Space Bar Labs.
+        </p>
+    </section>
+
+    <section class="installation">
+        <h2>Installation Instructions</h2>
+        <p>
+            To use packages from this repository, you'll need to install the repository configuration 
+            package first. For complete setup instructions and usage information, visit:
+        </p>
+        <a href="https://github.com/spacebarlabs/apt.spacebarlabs.com" class="github-link">
+            View Installation Instructions on GitHub
+        </a>
+    </section>
+
+    <section class="packages">
+        <h2>Available Packages</h2>
+        <ul class="package-list">
+            <!-- PACKAGE_LIST_PLACEHOLDER -->
+        </ul>
+    </section>
 </body>
 </html>

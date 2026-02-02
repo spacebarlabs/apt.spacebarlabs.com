@@ -3,3 +3,5 @@
 *.buildinfo
 *.changes
 debian/
+dist/
+

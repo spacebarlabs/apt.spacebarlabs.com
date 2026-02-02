@@ -22,6 +22,42 @@ dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
 # 3. Create CNAME for Custom Domain
 echo "apt.spacebarlabs.com" > CNAME
-cp "../index.html" .
+
+# 4. Generate package list for index.html
+# Create a temporary file with the package list
+PACKAGE_LIST_FILE=$(mktemp)
+
+# Ensure cleanup on exit
+trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT
+
+# Enable nullglob to handle case when no .deb files exist
+shopt -s nullglob
+for deb_file in *.deb; do
+  echo "            <li>${deb_file}</li>" >> "$PACKAGE_LIST_FILE"
+done
+shopt -u nullglob
+
+# Copy index.html and replace package list placeholder
+if ! cp "../index.html" .; then
+  echo "❌ Failed to copy index.html"
+  exit 1
+fi
+
+if [ -s "$PACKAGE_LIST_FILE" ]; then
+  # Use sed to replace the placeholder with the contents of the file:
+  # 1) Read the package list file at the placeholder location
+  # 2) Delete the placeholder line
+  # Note: -i works differently on macOS vs Linux, but this runs in Ubuntu CI
+  if ! sed -i -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/r $PACKAGE_LIST_FILE" -e "/<!-- PACKAGE_LIST_PLACEHOLDER -->/d" index.html; then
+    echo "❌ Failed to update index.html with package list"
+    exit 1
+  fi
+else
+  # If no packages found, show a message (should not happen in production)
+  if ! sed -i 's/<!-- PACKAGE_LIST_PLACEHOLDER -->/<li>No packages available<\/li>/g' index.html; then
+    echo "❌ Failed to update index.html with fallback message"
+    exit 1
+  fi
+fi
 
 echo "✅ APT index generated successfully"
