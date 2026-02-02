@@ -140,7 +140,10 @@ mkdir -p "$WHISPER_TMP/DEBIAN"
 
 # 3. Bundle SOURCE code
 SOURCE_URL="https://github.com/ggml-org/whisper.cpp/archive/refs/tags/${LATEST_TAG}.tar.gz"
-curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1
+if ! curl -L -s "$SOURCE_URL" | tar xz -C "$SRC_DIR" --strip-components=1; then
+  echo "❌ Failed to download whisper.cpp source. Skipping this package."
+  rm -rf "$WHISPER_TMP"
+else
 
 # 4. Create Control File
 cat > "$WHISPER_TMP/DEBIAN/control" <<EOF
@@ -206,5 +209,86 @@ EOF
 chmod 755 "$WHISPER_TMP/DEBIAN/"*
 dpkg-deb --build "$WHISPER_TMP" "dist/sbl-github-whisper-cpp-native_1:${CLEAN_VERSION}_all.deb"
 rm -rf "$WHISPER_TMP"
+echo "✅ sbl-github-whisper-cpp-native package built successfully"
+fi
+
+# ---------------------------------------------------------
+# Build sbl-chawan (Chawan TUI browser)
+# ---------------------------------------------------------
+echo "Building sbl-chawan package..."
+
+# Fetch latest version from the news page
+echo "Fetching latest Chawan version from https://chawan.net/news/index.html..."
+CHAWAN_VERSION=$(curl -s https://chawan.net/news/index.html | grep -oP 'Chawan \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
+if [ -z "$CHAWAN_VERSION" ]; then
+  echo "❌ Failed to determine latest Chawan version from news page"
+  echo "   This package will be skipped."
+else
+  echo "Latest Chawan version: $CHAWAN_VERSION"
+fi
+
+# Only proceed if we successfully fetched a version
+if [ -n "$CHAWAN_VERSION" ]; then
+  # Prepare temporary workspace
+  CHAWAN_TMP=$(mktemp -d)
+  cd "$CHAWAN_TMP"
+  
+  # Try multiple possible URL patterns for the .deb file
+  DEB_URLS=(
+    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}_amd64.deb"
+    "https://chawan.net/releases/chawan_${CHAWAN_VERSION}-1_amd64.deb"
+    "https://chawan.net/releases/${CHAWAN_VERSION}/chawan_${CHAWAN_VERSION}_amd64.deb"
+  )
+  
+  DEB_FILE=""
+  for url in "${DEB_URLS[@]}"; do
+    echo "Trying to download from: $url"
+    if curl -L -f -s "$url" -o "chawan_${CHAWAN_VERSION}_amd64.deb"; then
+      DEB_FILE="chawan_${CHAWAN_VERSION}_amd64.deb"
+      echo "Successfully downloaded from: $url"
+      break
+    fi
+  done
+  
+  if [ -z "$DEB_FILE" ]; then
+    echo "❌ Failed to download Chawan .deb from any known URL"
+    echo "   This package will be skipped. Please check https://chawan.net for the correct download URL."
+    cd "$WORKSPACE"
+    rm -rf "$CHAWAN_TMP"
+  else
+    # Create package structure for repackaging
+    mkdir -p repackage/DEBIAN
+    
+    # Extract the original .deb
+    dpkg-deb -x "$DEB_FILE" repackage/
+    dpkg-deb -e "$DEB_FILE" repackage/DEBIAN/
+    
+    # Create new control file with sbl- prefix
+    cat > repackage/DEBIAN/control <<EOF
+Package: sbl-chawan
+Version: 1:${CHAWAN_VERSION}
+Section: web
+Priority: optional
+Architecture: amd64
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Description: Chawan TUI Browser
+ Chawan is a terminal-based web browser with support for modern web standards.
+ This package provides the official Chawan binary distribution.
+ .
+ Original package from https://chawan.net
+EOF
+    
+    # Build the repackaged .deb
+    dpkg-deb --build repackage "$WORKSPACE/dist/sbl-chawan_1:${CHAWAN_VERSION}_amd64.deb"
+    
+    # Clean up
+    cd "$WORKSPACE"
+    rm -rf "$CHAWAN_TMP"
+    
+    echo "✅ sbl-chawan package built successfully"
+  fi
+
+fi  # End of CHAWAN_VERSION check
 
 echo "✅ All packages built successfully"
