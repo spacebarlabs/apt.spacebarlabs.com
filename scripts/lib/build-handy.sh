@@ -2,9 +2,11 @@
 # Build sbl-handy package (Handy speech-to-text application)
 
 # Source common utilities
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/common.sh
-source "$SCRIPT_DIR/common.sh"
+if [ -z "${_COMMON_SH_LOADED:-}" ]; then
+  source "$_SCRIPT_DIR/common.sh"
+fi
 
 build_handy() {
   local workspace="$1"

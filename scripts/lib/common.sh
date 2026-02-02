@@ -1,6 +1,12 @@
 #!/bin/bash
 # Common utility functions for package building
 
+# Guard to prevent multiple sourcing
+if [ -n "${_COMMON_SH_LOADED:-}" ]; then
+  return 0
+fi
+_COMMON_SH_LOADED=1
+
 # Ensure script fails on any error
 set -e
 
