@@ -26,11 +26,15 @@ echo "apt.spacebarlabs.com" > CNAME
 # 4. Generate package list for index.html
 # Create a temporary file with the package list
 PACKAGE_LIST_FILE=$(mktemp)
+
+# Enable nullglob to handle case when no .deb files exist
+shopt -s nullglob
 for deb_file in *.deb; do
   if [ -f "$deb_file" ]; then
     echo "            <li>${deb_file}</li>" >> "$PACKAGE_LIST_FILE"
   fi
 done
+shopt -u nullglob
 
 # Copy index.html and replace package list placeholder
 cp "../index.html" .
@@ -44,8 +48,12 @@ if [ -s "$PACKAGE_LIST_FILE" ]; then
     exit 1
   fi
 else
-  # If no packages found, show a message
-  sed -i 's/<!-- PACKAGE_LIST_PLACEHOLDER -->/<li>No packages available<\/li>/g' index.html
+  # If no packages found, show a message (should not happen in production)
+  if ! sed -i 's/<!-- PACKAGE_LIST_PLACEHOLDER -->/<li>No packages available<\/li>/g' index.html; then
+    echo "❌ Failed to update index.html with fallback message"
+    rm -f "$PACKAGE_LIST_FILE"
+    exit 1
+  fi
 fi
 
 # Clean up temporary file
