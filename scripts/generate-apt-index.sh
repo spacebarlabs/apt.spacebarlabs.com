@@ -25,7 +25,7 @@ echo "apt.spacebarlabs.com" > CNAME
 
 # 4. Generate package list for index.html
 # Create a temporary file with the package list
-PACKAGE_LIST_FILE=$(mktemp)
+PACKAGE_LIST_FILE=$(mktemp -t apt-packages.XXXXXX)
 
 # Ensure cleanup on exit
 trap 'rm -f "$PACKAGE_LIST_FILE"' EXIT ERR INT TERM
