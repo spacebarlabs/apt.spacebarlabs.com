@@ -26,6 +26,7 @@ Depends:
   ncal,
   neovim,
   openssh-client,
+  pandoc,
   rlwrap,
   ruby,
   sbl-apt-repos,
