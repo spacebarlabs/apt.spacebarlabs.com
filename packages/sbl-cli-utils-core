@@ -1,0 +1,41 @@
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: sbl-cli-utils-core
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  bash,
+  btop,
+  curl,
+  entr,
+  fd-find,
+  git,
+  git-crypt,
+  gnupg2,
+  gron,
+  inotify-tools,
+  jq,
+  less,
+  libimage-exiftool-perl,
+  lynx,
+  man-db,
+  micro,
+  ncal,
+  neovim,
+  openssh-client,
+  pandoc,
+  rlwrap,
+  ruby,
+  sbl-apt-repos,
+  tmux,
+  trash-cli,
+  tree,
+  unar,
+  w3m,
+  wget,
+  yadm,
+  zsh,
+Description: Space Bar Labs CLI Utilities (Core)
+  Console-based system tools, editors, and web browsers.
+  Core utilities that are widely available across Ubuntu/Debian distributions.

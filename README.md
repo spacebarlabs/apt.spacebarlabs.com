@@ -25,7 +25,10 @@ This bootstrap package (`sbl-apt-repos`) configures APT repositories for all Spa
 After the initial setup, you can install any Space Bar Labs package:
 
 ```bash
-# Install CLI utilities (includes mise and other tools)
+# Install core CLI utilities (widely available packages)
+sudo apt install -y sbl-cli-utils-core
+
+# Install all CLI utilities (includes git-annex, mise, and other tools)
 sudo apt install -y sbl-cli-utils
 
 # Or install the full suite
