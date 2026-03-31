@@ -55,10 +55,10 @@ cmake -B build -DGGML_NATIVE=ON
 cmake --build build --config Release -j$(nproc)
 
 # Install official renamed binaries (Migration Dec 2024)
-install -m 755 build/bin/main /usr/local/bin/whisper-cli
-install -m 755 build/bin/server /usr/local/bin/whisper-server
-install -m 755 build/bin/bench /usr/local/bin/whisper-bench
-install -m 755 build/bin/stream /usr/local/bin/whisper-stream
+install -m 755 build/bin/whisper-cli /usr/local/bin/whisper-cli
+install -m 755 build/bin/whisper-server /usr/local/bin/whisper-server
+install -m 755 build/bin/whisper-bench /usr/local/bin/whisper-bench
+[ -f build/bin/whisper-stream ] && install -m 755 build/bin/whisper-stream /usr/local/bin/whisper-stream || true
 
 # Space Bar Labs convenience aliases
 ln -sf /usr/local/bin/whisper-cli /usr/local/bin/whisper-cpp
