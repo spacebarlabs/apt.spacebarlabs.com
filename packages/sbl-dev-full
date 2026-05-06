@@ -1,0 +1,11 @@
+Package: sbl-dev-full
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  sbl-dev,
+  sbl-dev-ruby,
+Description: Space Bar Labs Full Development Tools
+  This meta-package installs all Space Bar Labs development tools,
+  including the base dev package and Ruby development dependencies.

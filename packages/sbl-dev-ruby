@@ -1,0 +1,10 @@
+Package: sbl-dev-ruby
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends:
+  libyaml-dev,
+Description: Space Bar Labs Ruby Development Tools
+  This meta-package installs Ruby development dependencies including
+  libyaml-dev for building native extensions.
