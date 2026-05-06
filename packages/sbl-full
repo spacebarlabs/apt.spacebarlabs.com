@@ -6,6 +6,7 @@ Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
   sbl-cli-utils,
   sbl-dev,
+  sbl-dev-ruby,
   sbl-gnome,
   sbl-gui-utils,
   sbl-snap-config,
