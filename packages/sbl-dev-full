@@ -5,6 +5,7 @@ Architecture: all
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
   codespell,
+  imagemagick,
   sbl-dev,
   sbl-dev-ruby,
 Description: Space Bar Labs Full Development Tools
