@@ -4,6 +4,7 @@ Priority: optional
 Architecture: all
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
+  codespell,
   sbl-dev,
   sbl-dev-ruby,
 Description: Space Bar Labs Full Development Tools
