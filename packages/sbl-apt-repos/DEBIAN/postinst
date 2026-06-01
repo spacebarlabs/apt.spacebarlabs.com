@@ -41,7 +41,7 @@ else
 fi
 
 # Add Google Chrome repository to sources
-CHROME_SOURCE="deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome-archive-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main"
+CHROME_SOURCE="deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome-archive-keyring.gpg] http://HTTPS///dl.google.com/linux/chrome/deb/ stable main"
 CHROME_SOURCE_FILE="/etc/apt/sources.list.d/google-chrome.list"
 
 if [ ! -f "$CHROME_SOURCE_FILE" ] || ! grep -qF "$CHROME_SOURCE" "$CHROME_SOURCE_FILE"; then
