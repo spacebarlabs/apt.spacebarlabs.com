@@ -10,10 +10,10 @@ Depends:
   gnome-shell-extension-appindicator,
   gnome-shell-extension-gsconnect,
   gnome-shell-extensions,
-  gnome-shell-pomodoro,
   gnome-tweak-tool,
   indicator-multiload,
   sbl-flatpak-emote,
+  sbl-flatpak-focus-timer,
 Recommends:
   lollypop,
 Description: Space Bar Labs GNOME Extensions

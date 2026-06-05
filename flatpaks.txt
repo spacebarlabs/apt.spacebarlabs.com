@@ -11,6 +11,7 @@ eloquent: re.sonny.Eloquent
 emergency-alerts: io.github.leolost2605.emergency-alerts
 emote: com.tomjwatson.Emote
 eyedropper: com.github.finefindus.eyedropper
+focus-timer: io.github.focustimerhq.FocusTimer
 foliate: com.github.johnfactotum.Foliate
 logseq: com.logseq.Logseq
 lollypop: org.gnome.Lollypop
