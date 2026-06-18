@@ -46,6 +46,10 @@ sudo apt update
 sudo apt upgrade
 ```
 
+## See also
+
+- [dotfiles](https://github.com/SpaceBarLabs/dotfiles)
+
 ## Warranty
 
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING
