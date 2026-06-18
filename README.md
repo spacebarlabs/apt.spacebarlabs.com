@@ -1,5 +1,7 @@
 # apt.spacebarlabs.com
 
+[![Sponsored by CloudBreak](https://cloudbreak.app/promotional_banner.svg?source=apt.spacebarlabs.com_readme)](https://cloudbreak.app/promotional_banner/visit?source=apt.spacebarlabs.com_readme)
+
 Debian packages.  Meta packages to make it easy to install preferred tools on Debian-based machines.
 
 ## Usage
