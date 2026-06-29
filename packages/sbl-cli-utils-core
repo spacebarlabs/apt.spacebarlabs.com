@@ -8,6 +8,7 @@ Depends:
   bash,
   btop,
   curl,
+  duf,
   entr,
   fd-find,
   git,
