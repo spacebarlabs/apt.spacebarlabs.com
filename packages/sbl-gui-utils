@@ -10,5 +10,6 @@ Depends:
 Recommends:
   google-chrome-stable,
   signal-desktop,
+  nextcloud-desktop
 Description: Space Bar Labs GUI Utilities
   GUI-oriented tools

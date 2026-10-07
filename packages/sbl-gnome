@@ -14,6 +14,7 @@ Depends:
   indicator-multiload,
   sbl-flatpak-emote,
   sbl-flatpak-focus-timer,
+  nautilus-nextcloud
 Recommends:
   lollypop,
 Description: Space Bar Labs GNOME Extensions
