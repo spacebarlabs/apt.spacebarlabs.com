@@ -39,6 +39,16 @@ sudo apt install -y sbl-full
 
 ### Upgrading
 
+When upgrading an existing installation, update the repository configuration first
+and refresh the package lists again before installing packages with new external
+dependencies, such as Stripe:
+
+```bash
+sudo apt update
+sudo apt install --only-upgrade sbl-apt-repos
+sudo apt update
+```
+
 To upgrade all installed packages:
 
 ```bash

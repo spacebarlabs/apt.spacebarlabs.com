@@ -20,7 +20,7 @@ get_version() {
   # Manual version control with Epoch
   # We use "1:" to force apt to upgrade over the old timestamp versions (e.g. 2024...)
   # Future updates should be 1:1.1, 1:1.2, etc.
-  echo "1:1.0"
+  echo "1:1.1"
 }
 
 # Create temporary directory and echo its path
