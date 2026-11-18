@@ -10,9 +10,11 @@ echo "  sudo rm -f /etc/apt/sources.list.d/google-chrome.list"
 echo "  sudo rm -f /etc/apt/sources.list.d/spacebarlabs.list"
 echo "  sudo rm -f /etc/apt/sources.list.d/docker.sources"
 echo "  sudo rm -f /etc/apt/sources.list.d/signal-desktop.sources"
+echo "  sudo rm -f /etc/apt/sources.list.d/stripe.list"
 echo "  sudo rm -f /etc/apt/keyrings/mise-archive-keyring.asc"
 echo "  sudo rm -f /etc/apt/keyrings/docker.asc"
 echo "  sudo rm -f /etc/apt/keyrings/google-chrome-archive-keyring.gpg"
 echo "  sudo rm -f /usr/share/keyrings/signal-desktop-keyring.gpg"
+echo "  sudo rm -f /usr/share/keyrings/stripe.gpg"
 
 exit 0

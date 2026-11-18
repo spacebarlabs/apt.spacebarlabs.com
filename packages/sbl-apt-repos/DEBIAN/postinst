@@ -141,6 +141,34 @@ else
     fi
 fi
 
+# Configure Stripe CLI repository
+echo "Configuring Stripe CLI repository..."
+
+# Download and install Stripe CLI GPG key
+install -dm 755 /usr/share/keyrings
+if [ ! -f /usr/share/keyrings/stripe.gpg ]; then
+    if curl -fsSL https://packages.stripe.dev/api/security/keypair/stripe-cli-gpg/public | gpg --dearmor -o /usr/share/keyrings/stripe.gpg; then
+        chmod 644 /usr/share/keyrings/stripe.gpg
+        echo "Stripe CLI GPG key installed."
+    else
+        echo "Warning: Failed to download Stripe CLI GPG key. Stripe CLI repository will not be configured."
+    fi
+else
+    echo "Stripe CLI GPG key already exists."
+fi
+
+# Add Stripe CLI repository to sources
+STRIPE_SOURCE="deb [signed-by=/usr/share/keyrings/stripe.gpg] https://packages.stripe.dev/stripe-cli-debian-local stable main"
+STRIPE_SOURCE_FILE="/etc/apt/sources.list.d/stripe.list"
+
+if [ ! -f "$STRIPE_SOURCE_FILE" ] && [ -f /usr/share/keyrings/stripe.gpg ]; then
+    echo "$STRIPE_SOURCE" > "$STRIPE_SOURCE_FILE"
+    chmod 644 "$STRIPE_SOURCE_FILE"
+    echo "Stripe CLI repository added to sources."
+elif [ -f "$STRIPE_SOURCE_FILE" ]; then
+    echo "Stripe CLI repository already configured."
+fi
+
 echo "Repository configuration complete. Please run 'sudo apt update' to refresh package lists."
 
 exit 0
