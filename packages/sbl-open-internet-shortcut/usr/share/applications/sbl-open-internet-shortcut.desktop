@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Internet Shortcut Handler
+Exec=sbl-open-internet-shortcut %f
+Terminal=false
+NoDisplay=true
+MimeType=application/x-mswinurl;application/internet-shortcut;
