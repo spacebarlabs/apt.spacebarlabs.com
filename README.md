@@ -46,6 +46,8 @@ sudo apt update
 sudo apt upgrade
 ```
 
+Multiple update/upgrade calls may needed if `sbl-apt-repos` is updated.
+
 ## See also
 
 - [dotfiles](https://github.com/SpaceBarLabs/dotfiles)
