@@ -5,6 +5,7 @@ Standards-Version: 3.9.2
 Package: sbl-gui-utils
 Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
 Depends:
+  sbl-open-internet-shortcut,
   vlc,
   wl-clipboard,
 Recommends:

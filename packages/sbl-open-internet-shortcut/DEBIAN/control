@@ -1,0 +1,9 @@
+Package: sbl-open-internet-shortcut
+Version: 1:1.0
+Section: misc
+Priority: optional
+Architecture: all
+Maintainer: Benjamin Oakes <apt@spacebarlabs.com>
+Depends: desktop-file-utils, xdg-utils, zenity
+Description: Open Windows Internet Shortcut files
+ Opens .url files with their configured URL.
